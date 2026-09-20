@@ -61,6 +61,7 @@
   i[data-lucide], .lucide { width: 18px; height: 18px; flex-shrink: 0; }
   i[data-lucide] { display: inline-block; }
   .lucide.sm { width: 15px; height: 15px; }
+  .lucide.xs { width: 12px; height: 12px; }
   .lucide.big { width: 38px; height: 38px; color: var(--muted); }
 
   /* Layout */
@@ -75,17 +76,22 @@
     .col + .col { border-left: 1px solid var(--line); }
   }
   @media (max-width: 479px) { .lbl { display: none; } .topbar { padding: 10px 14px; } }
+  .backup-bar { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 8px 16px; font-size: 14px; background: color-mix(in srgb, var(--gold) 14%, var(--panel)); border-bottom: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line)); }
 
   /* Buttons and inputs */
   .btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s; }
   .btn:hover { background: var(--panel2); border-color: color-mix(in srgb, var(--muted) 45%, var(--line)); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn .cnt { color: var(--muted); font-variant-numeric: tabular-nums; }
   .btn-primary { background: var(--gold); color: var(--on-gold); border-color: transparent; font-weight: 700; }
   .btn-primary:hover { background: color-mix(in srgb, var(--gold) 86%, white); border-color: transparent; }
   .btn-danger { background: var(--danger); color: #fff; border-color: transparent; font-weight: 700; }
   .btn-danger:hover { background: color-mix(in srgb, var(--danger) 88%, black); border-color: transparent; }
   .btn-icon { width: 38px; padding: 0; justify-content: center; }
+  .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; }
   .icon-btn { width: 32px; height: 32px; border-radius: 8px; display: inline-grid; place-items: center; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
   .icon-btn:hover { background: var(--panel2); color: var(--text); }
+  .icon-btn[aria-pressed="true"] { color: var(--gold-text); }
   .icon-btn.armed { width: auto; padding: 0 10px; font-size: 13px; font-weight: 700; color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
   .field { width: 100%; height: 42px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); padding: 0 12px; font-size: 16px; }
   .field::placeholder, .note-input::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
@@ -101,6 +107,7 @@
 
   /* Hero */
   .hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px 22px; padding: 20px; border-radius: 18px; background: var(--panel); border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line)); }
+  .hero-full { grid-column: 1 / -1; }
   .lvl { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 68px; line-height: .85; font-weight: 800; color: var(--gold-text); font-variant-numeric: tabular-nums; }
   .xpbar { position: relative; height: 16px; border-radius: 5px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden; }
   .xpbar > i { display: block; height: 100%; background: var(--gold); transition: width .5s ease; }
@@ -109,10 +116,18 @@
   .stat b { display: block; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
   .stat span { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); line-height: 1.3; }
 
+  /* Matura */
+  .exams { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .exam { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); }
+  .exam-days b { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 30px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .exam-days span { margin-left: 4px; font-size: 13px; color: var(--muted); }
+  .exam-date { width: 100%; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 13px; }
+
   /* Habit cards */
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
   .habit { padding: 16px 16px 14px 20px; box-shadow: inset 4px 0 0 var(--c); }
   .habit[data-done="1"] { border-color: color-mix(in srgb, var(--c) 55%, var(--line)); }
+  .off-badge { padding: 1px 8px; border-radius: 999px; font-size: 12px; background: var(--panel2); color: var(--muted); }
   .streak { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 999px; background: var(--panel2); color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap; }
   .streak.hot { color: var(--gold-text); background: color-mix(in srgb, var(--gold) 15%, var(--panel2)); }
   .check-btn { display: flex; align-items: center; gap: 12px; width: 100%; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 15px; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s; }
@@ -130,32 +145,69 @@
   .timer-btn.is-running { background: transparent; color: var(--text); }
   .pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); animation: pulse 1.2s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: .25; } }
-  .mini-btn { height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; }
-  .mini-btn:hover { color: var(--text); border-color: var(--muted); }
+  .mini-btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; }
+  .mini-btn:hover, .mini-btn[aria-expanded="true"] { color: var(--text); border-color: var(--muted); }
+  .pomo { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; background: color-mix(in srgb, var(--c) 16%, var(--panel2)); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
   .week { display: flex; gap: 6px; }
   .wd { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
   .sq { display: block; width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--line); }
   .sq.on { background: var(--c); border-color: var(--c); }
+  .sq.off:not(.on) { border-style: dashed; opacity: .5; }
   .wd.is-today { color: var(--text); font-weight: 700; }
   .wd.is-today .sq:not(.on) { border-color: var(--muted); }
   .note-input { width: 100%; height: 38px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 14px; }
   .note-add { display: inline-flex; align-items: center; gap: 6px; padding: 2px 0; background: none; border: 0; color: var(--muted); font-size: 13px; cursor: pointer; }
   .note-add:hover { color: var(--text); }
 
+  /* Kalendarz nawyku */
+  .cal { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+  .cal-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .cal-wd { padding-bottom: 2px; text-align: center; font-size: 11px; color: var(--muted); }
+  .cell { display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; height: 48px; padding: 3px 5px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+  .cell .d { font-size: 10px; color: var(--muted); line-height: 1; }
+  .cell b { align-self: center; font-size: 12px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .cell.is-part { background: color-mix(in srgb, var(--c) 16%, transparent); border-color: color-mix(in srgb, var(--c) 40%, var(--line)); }
+  .cell.is-done { background: color-mix(in srgb, var(--c) 38%, transparent); border-color: var(--c); }
+  .cell.is-off:not(.is-done):not(.is-part) { border-style: dashed; opacity: .55; }
+  .cell.is-future { opacity: .3; cursor: default; }
+  .cell.is-today .d { color: var(--text); font-weight: 700; }
+  .cell.is-sel { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .dayedit { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--panel2); }
+  .dayedit .field { height: 40px; }
+  .dayedit .check-btn { background: var(--panel); }
+
   /* Notes */
   .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .tile { display: flex; flex-direction: column; gap: 10px; padding: 14px 14px 12px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); }
+  .tile.is-pinned { border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); border-top-color: var(--c); }
+  .tile.is-editing { grid-column: 1 / -1; }
   .tile p { font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .li { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 3px 0; background: none; border: 0; color: var(--text); font-size: 15px; line-height: 1.45; text-align: left; cursor: pointer; }
+  .li .box { width: 18px; height: 18px; margin-top: 2px; border-radius: 5px; border: 2px solid var(--muted); display: grid; place-items: center; flex-shrink: 0; color: transparent; }
+  .li.is-done .box { background: var(--c); border-color: var(--c); color: #0b0f1a; }
+  .li .t { overflow-wrap: anywhere; }
+  .li.is-done .t { color: var(--muted); text-decoration: line-through; }
   .empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 36px 20px; text-align: center; border: 1px dashed var(--line); border-radius: 16px; }
+
+  /* Nagrody i odznaki */
+  .reward { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--panel2); }
+  .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+  .ach { display: flex; gap: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); opacity: .62; }
+  .ach.is-got { opacity: 1; border-color: color-mix(in srgb, var(--gold) 50%, var(--line)); }
+  .ach-ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; background: var(--panel); color: var(--muted); }
+  .ach.is-got .ach-ico { background: var(--gold); color: var(--on-gold); }
 
   /* Modals and toast */
   .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(5, 8, 15, .68); }
   .sheet { width: 100%; max-width: 480px; max-height: 92%; overflow-y: auto; padding: 22px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
+  .sheet.wide { max-width: 680px; }
   .opt { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; }
   .opt small { color: var(--muted); font-size: 12px; font-weight: 400; line-height: 1.25; }
   .opt[aria-pressed="true"] { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--panel2)); }
   .opt:disabled { opacity: .45; cursor: not-allowed; }
-  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 60; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px; background: var(--text); color: var(--bg); font-size: 14px; font-weight: 500; opacity: 0; pointer-events: none; transform: translate(-50%, 16px); transition: opacity .2s, transform .2s; }
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 60; width: max-content; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px; background: var(--text); color: var(--bg); font-size: 14px; font-weight: 500; text-align: center; opacity: 0; pointer-events: none; transform: translate(-50%, 16px); transition: opacity .2s, transform .2s; }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   @media (prefers-reduced-motion: reduce) {
@@ -168,6 +220,11 @@
   <div id="storageWarn" hidden class="px-4 py-2 text-sm text-center" style="background:var(--danger);color:#fff" role="alert">
     Ta przeglądarka nie pozwala zapisywać danych lokalnie. Po odświeżeniu wszystko zniknie, więc eksportuj dane po każdej sesji.
   </div>
+  <div id="backupWarn" class="backup-bar" hidden>
+    <i data-lucide="shield-alert"></i>
+    <span id="backupWarnText"></span>
+    <button class="btn btn-sm" data-action="export">Eksportuj teraz</button>
+  </div>
 
   <header class="topbar">
     <div class="flex items-center gap-3 min-w-0">
@@ -178,6 +235,7 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
+      <span id="lastExport" class="text-xs text-muted hidden md:inline mr-1"></span>
       <button class="btn" data-action="import" aria-label="Importuj dane z pliku"><i data-lucide="upload"></i><span class="lbl">Importuj</span></button>
       <button class="btn" data-action="export" aria-label="Eksportuj dane do pliku tekstowego"><i data-lucide="download"></i><span class="lbl">Eksportuj dane</span></button>
       <button class="btn btn-icon" id="themeBtn" data-action="theme" aria-label="Przełącz motyw jasny lub ciemny"></button>
@@ -191,7 +249,8 @@
         <h2 id="h-habits" class="font-display text-2xl font-bold flex items-center gap-3"><i data-lucide="flame"></i>Nawyk-RPG</h2>
         <button class="btn btn-primary" data-action="new-habit"><i data-lucide="plus"></i>Nowy nawyk</button>
       </div>
-      <div id="hero" class="mb-5"></div>
+      <div id="hero" class="mb-4"></div>
+      <div id="exams" class="exams mb-5"></div>
       <div id="habitFilters" class="flex flex-wrap gap-2 mb-4"></div>
       <div id="habitList" class="flex flex-col gap-3"></div>
     </section>
@@ -205,9 +264,15 @@
         <textarea id="noteText" class="field" maxlength="2000" aria-label="Treść notatki" placeholder="Szybka notatka: wzór, zadanie z matury, pomysł na projekt..."></textarea>
         <div class="flex flex-wrap items-center justify-between gap-3 mt-3">
           <div class="flex flex-wrap gap-2" id="noteCats" role="group" aria-label="Kategoria notatki"></div>
-          <button class="btn btn-primary" data-action="add-note"><i data-lucide="plus"></i>Dodaj notatkę</button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="chip" id="noteListToggle" data-action="toggle-note-list" aria-pressed="false"><i data-lucide="list-checks" class="sm"></i>Checklista</button>
+            <button class="btn btn-primary" data-action="add-note"><i data-lucide="plus"></i>Dodaj notatkę</button>
+          </div>
         </div>
-        <p class="text-xs text-muted mt-2">Skrót: Ctrl + Enter dodaje notatkę.</p>
+        <p class="text-xs text-muted mt-2">Ctrl + Enter dodaje notatkę. W trybie checklisty każda linia to jeden punkt.</p>
+      </div>
+      <div id="noteSearchWrap" class="mb-3" hidden>
+        <input id="noteSearch" class="field" type="search" placeholder="Szukaj w notatkach" aria-label="Szukaj w notatkach" autocomplete="off">
       </div>
       <div id="noteFilters" class="flex flex-wrap gap-2 mb-4"></div>
       <div id="noteList"></div>
@@ -232,13 +297,18 @@
         <div class="grid grid-cols-3 gap-2" id="fTypes">
           <button type="button" class="opt" data-action="pick-type" data-type="bool"><i data-lucide="circle-check"></i>Tak/Nie<small>zwykły checkbox</small></button>
           <button type="button" class="opt" data-action="pick-type" data-type="count"><i data-lucide="gauge"></i>Ilościowy<small>licznik + / −</small></button>
-          <button type="button" class="opt" data-action="pick-type" data-type="time"><i data-lucide="timer"></i>Czasowy<small>stoper Start/Stop</small></button>
+          <button type="button" class="opt" data-action="pick-type" data-type="time"><i data-lucide="timer"></i>Czasowy<small>stoper i Pomodoro</small></button>
         </div>
         <p id="fTypeHint" class="text-xs text-muted mt-2" hidden>Typu celu nie da się zmienić po utworzeniu nawyku. Usuń go i dodaj od nowa, jeśli chcesz inny.</p>
       </div>
       <div>
         <span class="label">Kategoria</span>
         <div class="flex flex-wrap gap-2" id="fCats"></div>
+      </div>
+      <div>
+        <span class="label">Dni tygodnia</span>
+        <div class="flex flex-wrap gap-2" id="fDays"></div>
+        <p class="text-xs text-muted mt-2">W dni, których nie zaznaczysz, seria się nie przerywa.</p>
       </div>
       <div id="fCountFields" class="grid grid-cols-3 gap-3" hidden>
         <div><label class="label" for="fCountTarget">Cel dzienny</label><input id="fCountTarget" class="field" inputmode="decimal" autocomplete="off"></div>
@@ -255,6 +325,38 @@
       <button class="btn" data-action="close-modal">Anuluj</button>
       <button class="btn btn-primary" id="fSave" data-action="save-habit">Dodaj nawyk</button>
     </div>
+  </div>
+</div>
+
+<!-- Modal: nagrody za XP -->
+<div id="rewardsModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rewardsTitle">
+  <div class="sheet wide">
+    <div class="flex items-center justify-between mb-1">
+      <h3 id="rewardsTitle" class="font-display text-xl font-bold">Nagrody</h3>
+      <button class="icon-btn" data-action="close-modal" aria-label="Zamknij"><i data-lucide="x"></i></button>
+    </div>
+    <p class="text-sm text-muted mb-4">Sam ustalasz nagrody i ich cenę w XP. Wydawanie XP nie obniża poziomu.</p>
+    <div id="rewardsBody"></div>
+    <div class="card p-3 mt-4">
+      <span class="label">Nowa nagroda</span>
+      <div class="flex flex-wrap gap-2">
+        <input id="rewardName" class="field" style="flex:1 1 200px;width:auto" maxlength="60" autocomplete="off" placeholder="np. Odcinek serialu" aria-label="Nazwa nagrody">
+        <input id="rewardCost" class="field" style="width:110px" inputmode="numeric" autocomplete="off" value="100" aria-label="Koszt w XP">
+        <button class="btn btn-primary" data-action="add-reward"><i data-lucide="plus"></i>Dodaj</button>
+      </div>
+      <p id="rewardError" class="text-sm mt-2" style="color:var(--danger)" role="alert" hidden></p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: odznaki -->
+<div id="achModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="achTitle">
+  <div class="sheet wide">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="achTitle" class="font-display text-xl font-bold">Odznaki</h3>
+      <button class="icon-btn" data-action="close-modal" aria-label="Zamknij"><i data-lucide="x"></i></button>
+    </div>
+    <div id="achBody"></div>
   </div>
 </div>
 
@@ -296,6 +398,12 @@
 
   /* ---------- Stałe ---------- */
   const STORAGE_KEY = 'questlog.v1';
+  const VERSION = 2;
+  const POMO_WORK = 25 * 60;   // sekundy
+  const POMO_BREAK = 5 * 60;
+  const DAY_MS = 86400000;
+  const MAX_SCAN_DAYS = 4000;
+
   const CATEGORIES = {
     school: { label: 'Szkoła',  color: '#6ea8fe' },
     sport:  { label: 'Sport',   color: '#ff7a59' },
@@ -311,7 +419,13 @@
     count: { label: 'Ilościowy', xp: 15 },
     time:  { label: 'Czasowy',   xp: 20 }
   };
-  const WEEKDAYS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So'];
+  const EXAMS = [
+    { id: 'math',   name: 'Matma rozszerzona', color: '#6ea8fe' },
+    { id: 'geo',    name: 'Geografia',         color: '#4fd1a5' },
+    { id: 'german', name: 'Niemiecki',         color: '#ff7a59' }
+  ];
+  const WEEKDAYS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So'];   // indeks = Date.getDay()
+  const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];                        // tydzień od poniedziałku
   const TITLES = [[1, 'Nowicjusz'], [3, 'Adept'], [5, 'Łowca nawyków'], [8, 'Strateg'], [12, 'Mistrz dyscypliny'], [18, 'Legenda']];
 
   /* ---------- Narzędzia ---------- */
@@ -326,20 +440,50 @@
   const clampNum = (v, min, max, fallback) => { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback; };
   const parseNum = (v) => Number(String(v).trim().replace(',', '.'));
   const safeId = (id) => typeof id === 'string' && /^[\w-]{1,40}$/.test(id) && id !== '__proto__';
+  const isDateKey = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
 
   const dateKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const todayKey = () => dateKey(new Date());
   const startOfDay = (ms) => { const d = new Date(ms); return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); };
+  const keyToDate = (key) => { const [y, m, d] = key.split('-').map(Number); return new Date(y, m - 1, d); };
   const shiftKey = (key, delta) => { const [y, m, d] = key.split('-').map(Number); return dateKey(new Date(y, m - 1, d + delta)); };
+  const shiftMonth = (ym, delta) => { const [y, m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + delta, 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
+  const dayOfWeek = (key) => keyToDate(key).getDay();
   const fmtClock = (sec) => {
     const s = Math.max(0, Math.floor(sec));
     const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
     return h ? `${h}:${pad(m)}:${pad(ss)}` : `${pad(m)}:${pad(ss)}`;
   };
+  const fmtDur = (sec) => {
+    const tm = Math.round(sec / 60), h = Math.floor(tm / 60), m = tm % 60;
+    return h ? `${h} h ${m} min` : `${m} min`;
+  };
+  function daysUntil(key) {
+    const [y, m, d] = key.split('-').map(Number);
+    const now = new Date();
+    return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) / DAY_MS);
+  }
+  function agoText(ts) {
+    const n = Math.max(0, Math.floor((Date.now() - ts) / DAY_MS));
+    return n === 0 ? 'dzisiaj' : n === 1 ? 'wczoraj' : `${n} dni temu`;
+  }
 
   /* ---------- Stan i zapis (LocalStorage) ---------- */
-  const defaultState = () => ({ version: 1, habits: [], logs: {}, notes: [], timers: {}, bankedXp: 0, theme: 'dark' });
+  const defaultState = () => ({
+    version: VERSION, habits: [], logs: {}, notes: [], timers: {}, pomodoro: null, pomodoroCount: 0,
+    bankedXp: 0, spentXp: 0, rewards: [], redeemed: [], unlocked: {}, exams: {}, lastExportAt: null, theme: 'dark'
+  });
 
+  function parseItems(text, old = []) {
+    const pool = old.map((i) => ({ t: i.t, d: i.d, used: false }));
+    return text.split('\n').map((l) => l.trim().slice(0, 200)).filter(Boolean).slice(0, 100).map((t) => {
+      const match = pool.find((i) => !i.used && i.t === t);
+      if (match) { match.used = true; return { t, d: match.d }; }
+      return { t, d: false };
+    });
+  }
+
+  /* Wczytuje i czyści dane (z LocalStorage albo z pliku). Starsze wersje danych też przejdą. */
   function sanitizeState(raw) {
     if (!raw || typeof raw !== 'object' || (!Array.isArray(raw.habits) && !Array.isArray(raw.notes))) {
       throw new Error('invalid-format');
@@ -350,6 +494,8 @@
       if (!h || !safeId(h.id) || seen.has(h.id) || typeof h.name !== 'string' || !h.name.trim()) continue;
       seen.add(h.id);
       const type = has(TYPES, h.type) ? h.type : 'bool';
+      let days = Array.isArray(h.days) ? [...new Set(h.days.map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))] : [];
+      if (!days.length) days = [0, 1, 2, 3, 4, 5, 6];
       s.habits.push({
         id: h.id,
         name: h.name.trim().slice(0, 60),
@@ -358,6 +504,7 @@
         target: type === 'bool' ? 1 : clampNum(h.target, 0.01, 100000, 1),
         unit: type === 'count' ? String(h.unit == null ? '' : h.unit).slice(0, 12) : '',
         step: type === 'count' ? clampNum(h.step, 0.01, 10000, 1) : 1,
+        days: days.sort((a, b) => a - b),
         createdAt: Number(h.createdAt) || Date.now()
       });
     }
@@ -367,18 +514,23 @@
         const days = {};
         for (const day of Object.keys(raw.logs[id])) {
           const e = raw.logs[id][day];
-          if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !e || typeof e !== 'object') continue;
+          if (!isDateKey(day) || !e || typeof e !== 'object') continue;
           days[day] = { value: Math.max(0, Number(e.value) || 0), note: String(e.note == null ? '' : e.note).slice(0, 200) };
         }
         s.logs[id] = days;
       }
     }
     for (const n of Array.isArray(raw.notes) ? raw.notes : []) {
-      if (!n || typeof n.text !== 'string' || !n.text.trim()) continue;
+      if (!n || typeof n !== 'object') continue;
+      const list = n.list === true && Array.isArray(n.items);
+      const items = list ? n.items.filter((i) => i && typeof i.t === 'string' && i.t.trim()).slice(0, 100).map((i) => ({ t: i.t.trim().slice(0, 200), d: i.d === true })) : [];
+      if (list ? !items.length : (typeof n.text !== 'string' || !n.text.trim())) continue;
       s.notes.push({
         id: safeId(n.id) ? n.id : uid(),
-        text: n.text.slice(0, 2000),
+        text: list ? '' : n.text.slice(0, 2000),
+        list, items,
         category: has(NOTE_CATS, n.category) ? n.category : 'school',
+        pinned: n.pinned === true,
         createdAt: Number(n.createdAt) || Date.now()
       });
     }
@@ -388,7 +540,36 @@
         if (seen.has(id) && Number.isFinite(t) && t > 0 && t <= Date.now()) s.timers[id] = t;
       }
     }
+    const pm = raw.pomodoro;
+    if (pm && typeof pm === 'object' && seen.has(pm.habitId) && (pm.phase === 'work' || pm.phase === 'break')) {
+      const start = Number(pm.phaseStart);
+      if (Number.isFinite(start) && start > 0 && start <= Date.now()) {
+        s.pomodoro = { habitId: pm.habitId, phase: pm.phase, phaseStart: start };
+        if (pm.phase === 'work') s.timers[pm.habitId] = start;
+      }
+    }
+    s.pomodoroCount = Math.max(0, Math.floor(Number(raw.pomodoroCount) || 0));
     s.bankedXp = Math.max(0, Math.floor(Number(raw.bankedXp) || 0));
+    s.spentXp = Math.max(0, Math.floor(Number(raw.spentXp) || 0));
+    for (const r of Array.isArray(raw.rewards) ? raw.rewards : []) {
+      if (!r || !safeId(r.id) || typeof r.name !== 'string' || !r.name.trim()) continue;
+      s.rewards.push({ id: r.id, name: r.name.trim().slice(0, 60), cost: Math.round(clampNum(r.cost, 1, 100000, 100)) });
+    }
+    for (const r of (Array.isArray(raw.redeemed) ? raw.redeemed : []).slice(0, 50)) {
+      if (!r || typeof r.name !== 'string') continue;
+      s.redeemed.push({ id: safeId(r.id) ? r.id : uid(), name: r.name.slice(0, 60), cost: Math.round(clampNum(r.cost, 0, 100000, 0)), at: Number(r.at) || Date.now() });
+    }
+    if (raw.unlocked && typeof raw.unlocked === 'object') {
+      for (const id of Object.keys(raw.unlocked)) {
+        const ts = Number(raw.unlocked[id]);
+        if (safeId(id) && Number.isFinite(ts)) s.unlocked[id] = ts;
+      }
+    }
+    if (raw.exams && typeof raw.exams === 'object') {
+      for (const ex of EXAMS) if (isDateKey(raw.exams[ex.id])) s.exams[ex.id] = raw.exams[ex.id];
+    }
+    const le = Number(raw.lastExportAt);
+    s.lastExportAt = Number.isFinite(le) && le > 0 ? le : null;
     s.theme = raw.theme === 'light' ? 'light' : 'dark';
     return s;
   }
@@ -421,10 +602,11 @@
 
   let state = loadState();
   const ui = {
-    habitFilter: 'all', noteFilter: 'all', noteCat: 'school',
-    openNotes: new Set(), armed: null, focusNote: null,
-    form: { editingId: null, type: 'bool', category: 'school' },
-    pendingImport: null, lastLevel: null
+    habitFilter: 'all', noteFilter: 'all', noteCat: 'school', noteAsList: false, search: '',
+    openNotes: new Set(), cal: {}, armed: null, focusFk: null, msgs: [],
+    editingNote: null, editDraft: null,
+    form: { editingId: null, type: 'bool', category: 'school', days: [0, 1, 2, 3, 4, 5, 6] },
+    pendingImport: null, lastLevel: null, exportStamp: null
   };
   let renderedDay = todayKey();
   let armTimer = null, toastTimer = null;
@@ -434,6 +616,7 @@
   /* ---------- Logika nawyków ---------- */
   const habitById = (id) => state.habits.find((h) => h.id === id);
   const goalOf = (h) => (h.type === 'time' ? h.target * 60 : h.type === 'count' ? h.target : 1);
+  const isScheduled = (h, key) => h.days.includes(dayOfWeek(key));
 
   function valueOf(h, key) {
     let v = (state.logs[h.id] && state.logs[h.id][key] && state.logs[h.id][key].value) || 0;
@@ -454,6 +637,12 @@
     const e = ensureEntry(id, key);
     e.value = Math.max(0, Math.round(e.value + sec));
   }
+  /* Ustawia całkowitą wartość dnia (uwzględnia czas z trwającego stopera). */
+  function setValue(h, key, target) {
+    const e = ensureEntry(h.id, key);
+    const live = valueOf(h, key) - e.value;
+    e.value = Math.max(0, target - live);
+  }
   function commitElapsed(id, startMs, endMs) {
     let cur = startMs;
     while (cur < endMs) {
@@ -465,27 +654,40 @@
     }
   }
 
+  /* Pierwszy dzień, od którego ma sens liczyć serię. */
+  function habitStartKey(h) {
+    let start = dateKey(new Date(h.createdAt));
+    for (const k of Object.keys(state.logs[h.id] || {})) if (k < start) start = k;
+    return start;
+  }
+  /* Seria: dni wolne od nawyku jej nie przerywają, a zrobione dodatkowe dni się liczą. */
   function streakOf(h) {
-    const t = todayKey();
-    let key = isDone(h, t) ? t : shiftKey(t, -1);
+    const t = todayKey(), start = habitStartKey(h);
+    let key = isDone(h, t) || !isScheduled(h, t) ? t : shiftKey(t, -1);
     let n = 0;
-    while (isDone(h, key)) { n++; key = shiftKey(key, -1); }
+    for (let i = 0; i < MAX_SCAN_DAYS && key >= start; i++) {
+      if (isDone(h, key)) n++;
+      else if (isScheduled(h, key)) break;
+      key = shiftKey(key, -1);
+    }
     return n;
   }
   function bestStreakOf(h) {
-    const days = Object.keys(state.logs[h.id] || {}).filter((k) => isDone(h, k)).sort();
-    let best = 0, run = 0, prev = null;
-    for (const k of days) {
-      run = prev && shiftKey(prev, 1) === k ? run + 1 : 1;
-      best = Math.max(best, run);
-      prev = k;
+    const t = todayKey();
+    let key = habitStartKey(h), best = 0, run = 0;
+    for (let i = 0; i < MAX_SCAN_DAYS && key <= t; i++) {
+      if (isDone(h, key)) { run++; best = Math.max(best, run); }
+      else if (isScheduled(h, key)) run = 0;
+      key = shiftKey(key, 1);
     }
     return best;
   }
 
-  /* ---------- XP i poziomy (liczone z historii, więc zawsze spójne) ---------- */
-  const xpOfHabit = (h) => Object.keys(state.logs[h.id] || {}).filter((k) => isDone(h, k)).length * TYPES[h.type].xp;
+  /* ---------- XP, poziomy, nagrody ---------- */
+  const doneDaysOf = (h) => Object.keys(state.logs[h.id] || {}).filter((k) => isDone(h, k)).length;
+  const xpOfHabit = (h) => doneDaysOf(h) * TYPES[h.type].xp;
   const totalXp = () => state.bankedXp + state.habits.reduce((sum, h) => sum + xpOfHabit(h), 0);
+  const availableXp = () => Math.max(0, totalXp() - state.spentXp);
   const xpForLevel = (l) => 60 + l * 20;
   function levelInfo(xp) {
     let level = 1, need = xpForLevel(1), rest = xp;
@@ -494,14 +696,74 @@
   }
   const titleFor = (level) => TITLES.filter(([min]) => level >= min).pop()[1];
 
+  /* ---------- Odznaki ---------- */
+  function makeCtx() {
+    const memo = {};
+    const get = (k, fn) => (k in memo ? memo[k] : (memo[k] = fn()));
+    return {
+      doneDays: () => get('done', () => state.habits.reduce((s, h) => s + doneDaysOf(h), 0) + (state.bankedXp > 0 ? 1 : 0)),
+      best: () => get('best', () => state.habits.reduce((m, h) => Math.max(m, bestStreakOf(h)), 0)),
+      study: () => get('study', () => {
+        let sec = 0;
+        for (const h of state.habits) {
+          if (h.type !== 'time' || h.category !== 'school') continue;
+          for (const k of Object.keys(state.logs[h.id] || {})) sec += valueOf(h, k);
+        }
+        return Math.floor((sec / 3600) * 10) / 10;
+      }),
+      level: () => get('level', () => levelInfo(totalXp()).level),
+      perfect: () => get('perfect', hasPerfectDay)
+    };
+  }
+  function hasPerfectDay() {
+    if (state.habits.length < 3) return false;
+    const days = new Set();
+    for (const h of state.habits) for (const k of Object.keys(state.logs[h.id] || {})) days.add(k);
+    const starts = new Map(state.habits.map((h) => [h.id, habitStartKey(h)]));
+    for (const key of days) {
+      const list = state.habits.filter((h) => isScheduled(h, key) && starts.get(h.id) <= key);
+      if (list.length >= 3 && list.every((h) => isDone(h, key))) return true;
+    }
+    return false;
+  }
+  const ACHIEVEMENTS = [
+    { id: 'first',     icon: 'footprints',     name: 'Pierwszy krok',      desc: 'Ukończ dowolny nawyk',                         progress: (c) => [c.doneDays(), 1] },
+    { id: 'streak7',   icon: 'flame',          name: '7 dni serii',        desc: 'Seria 7 dni w jednym nawyku',                  progress: (c) => [c.best(), 7] },
+    { id: 'streak30',  icon: 'flame',          name: '30 dni serii',       desc: 'Seria 30 dni w jednym nawyku',                 progress: (c) => [c.best(), 30] },
+    { id: 'streak100', icon: 'flame',          name: '100 dni serii',      desc: 'Seria 100 dni w jednym nawyku',                progress: (c) => [c.best(), 100] },
+    { id: 'study10',   icon: 'graduation-cap', name: '10 godzin nauki',    desc: 'Nawyki czasowe z kategorii Szkoła',            progress: (c) => [c.study(), 10] },
+    { id: 'study50',   icon: 'graduation-cap', name: '50 godzin nauki',    desc: 'Nawyki czasowe z kategorii Szkoła',            progress: (c) => [c.study(), 50] },
+    { id: 'study100',  icon: 'graduation-cap', name: '100 godzin nauki',   desc: 'Nawyki czasowe z kategorii Szkoła',            progress: (c) => [c.study(), 100] },
+    { id: 'lvl5',      icon: 'trending-up',    name: 'Poziom 5',           desc: 'Osiągnij 5 poziom',                            progress: (c) => [c.level(), 5] },
+    { id: 'lvl10',     icon: 'trending-up',    name: 'Poziom 10',          desc: 'Osiągnij 10 poziom',                           progress: (c) => [c.level(), 10] },
+    { id: 'perfect',   icon: 'star',           name: 'Idealny dzień',      desc: 'Zrób wszystkie zaplanowane nawyki (min. 3)',   progress: (c) => [c.perfect() ? 1 : 0, 1] },
+    { id: 'notes10',   icon: 'notebook-pen',   name: 'Second Brain',       desc: 'Zapisz 10 notatek',                            progress: () => [state.notes.length, 10] },
+    { id: 'pomo5',     icon: 'timer',          name: '5 sesji Pomodoro',   desc: 'Ukończ 5 pełnych sesji po 25 minut',           progress: () => [state.pomodoroCount, 5] },
+    { id: 'pomo25',    icon: 'timer',          name: '25 sesji Pomodoro',  desc: 'Ukończ 25 pełnych sesji po 25 minut',          progress: () => [state.pomodoroCount, 25] },
+    { id: 'reward',    icon: 'gift',           name: 'Zasłużona nagroda',  desc: 'Odbierz pierwszą nagrodę za XP',               progress: () => [state.redeemed.length || state.spentXp > 0 ? 1 : 0, 1] },
+    { id: 'matura',    icon: 'calendar-check', name: 'Matura na radarze',  desc: 'Ustaw daty wszystkich trzech egzaminów',       progress: () => [EXAMS.filter((e) => state.exams[e.id]).length, 3] }
+  ];
+  /* Nowo zdobyte odznaki zapisują się na stałe, więc nie znikają po usunięciu nawyku. */
+  function checkAchievements() {
+    const ctx = makeCtx(), fresh = [];
+    for (const a of ACHIEVEMENTS) {
+      if (state.unlocked[a.id]) continue;
+      const [cur, max] = a.progress(ctx);
+      if (cur >= max) { state.unlocked[a.id] = Date.now(); fresh.push(a); }
+    }
+    return fresh;
+  }
+
   /* ---------- Powiadomienia i potwierdzenia ---------- */
   function toast(msg) {
     const el = $('#toast');
     el.textContent = msg;
     el.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+    toastTimer = setTimeout(() => el.classList.remove('show'), Math.min(6500, 2200 + msg.length * 40));
   }
+  /* say() zbiera komunikaty, a render() pokazuje je razem w jednym dymku. */
+  const say = (msg) => { ui.msgs.push(msg); };
   function arm(key, run) {
     clearTimeout(armTimer);
     if (ui.armed === key) { ui.armed = null; run(); return; }
@@ -510,20 +772,109 @@
     render();
   }
   const commit = () => { save(); render(); };
-  function trackXp(h, change) {
-    const before = isDone(h, todayKey());
+  function trackXp(h, change, key = todayKey()) {
+    const before = isDone(h, key);
     change();
-    if (!before && isDone(h, todayKey())) toast(`+${TYPES[h.type].xp} XP: ${h.name}`);
+    if (!before && isDone(h, key)) say(`+${TYPES[h.type].xp} XP: ${h.name}`);
     commit();
   }
+  function beep() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx(), osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880; gain.gain.value = 0.08;
+      osc.start(); osc.stop(ctx.currentTime + 0.25);
+      osc.onended = () => ctx.close();
+    } catch (e) { /* dźwięk jest opcjonalny */ }
+  }
+  function notify(msg) {
+    toast(msg);
+    beep();
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { /* ignoruj */ }
+  }
 
-  /* ---------- Render ---------- */
+  /* ---------- Pomodoro 25/5 ---------- */
+  function endPomodoro() {
+    const p = state.pomodoro;
+    if (!p) return;
+    if (p.phase === 'work' && state.timers[p.habitId]) {
+      commitElapsed(p.habitId, state.timers[p.habitId], Date.now());
+      delete state.timers[p.habitId];
+    }
+    state.pomodoro = null;
+  }
+  function startPomodoro(id) {
+    const h = habitById(id);
+    if (!h || h.type !== 'time') return;
+    endPomodoro();
+    if (state.timers[id]) { commitElapsed(id, state.timers[id], Date.now()); delete state.timers[id]; }
+    const now = Date.now();
+    state.timers[id] = now;
+    state.pomodoro = { habitId: id, phase: 'work', phaseStart: now };
+  }
+  /* Przechodzi między pracą a przerwą. Zalicza najwyżej 25 minut na sesję, nawet jeśli telefon spał. */
+  function advancePomodoro() {
+    let changed = false;
+    for (let guard = 0; guard < 4 && state.pomodoro; guard++) {
+      const q = state.pomodoro;
+      const end = q.phaseStart + (q.phase === 'work' ? POMO_WORK : POMO_BREAK) * 1000;
+      if (Date.now() < end) break;
+      changed = true;
+      if (q.phase === 'work') {
+        commitElapsed(q.habitId, state.timers[q.habitId] || q.phaseStart, end);
+        delete state.timers[q.habitId];
+        state.pomodoroCount++;
+        state.pomodoro = { habitId: q.habitId, phase: 'break', phaseStart: end };
+        notify('Pomodoro zaliczone! Czas na 5 minut przerwy.');
+      } else {
+        state.pomodoro = null;
+        notify('Przerwa skończona. Gotowy na kolejne Pomodoro?');
+      }
+    }
+    return changed;
+  }
+  function pomoLabel(p) {
+    const len = p.phase === 'work' ? POMO_WORK : POMO_BREAK;
+    const left = Math.max(0, len - (Date.now() - p.phaseStart) / 1000);
+    return `${p.phase === 'work' ? 'Praca' : 'Przerwa'}, zostało ${fmtClock(Math.ceil(left))}`;
+  }
+
+  /* ---------- Render: nagłówek, hero, matura ---------- */
+  function refreshIcons() {
+    if (window.lucide) { try { window.lucide.createIcons(); } catch (e) { /* ikony są opcjonalne */ } }
+  }
+
+  function renderChrome() {
+    document.documentElement.dataset.theme = state.theme;
+    $('#themeBtn').innerHTML = `<i data-lucide="${state.theme === 'dark' ? 'sun' : 'moon'}"></i>`;
+    $('#today').textContent = new Date().toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' });
+    $('#storageWarn').hidden = storageOk;
+    const ts = state.lastExportAt;
+    $('#lastExport').textContent = ts ? `Ostatni eksport: ${agoText(ts)}` : 'Nie było jeszcze eksportu';
+    const hasData = state.habits.length > 0 || state.notes.length > 0;
+    const stale = !ts || Date.now() - ts >= 7 * DAY_MS;
+    $('#backupWarn').hidden = !(hasData && stale);
+    $('#backupWarnText').textContent = ts
+      ? `Ostatnia kopia zapasowa: ${agoText(ts)}. Wyeksportuj dane, żeby nie stracić postępów.`
+      : 'Nie masz jeszcze kopii zapasowej. Wyeksportuj dane, żeby nie stracić postępów.';
+    syncNoteControls();
+  }
+  function syncNoteControls() {
+    document.querySelectorAll('#noteCats [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === ui.noteCat)));
+    $('#noteListToggle').setAttribute('aria-pressed', String(ui.noteAsList));
+  }
+
   function renderHero() {
     const xp = totalXp(), L = levelInfo(xp), key = todayKey();
     const doneList = state.habits.filter((h) => isDone(h, key));
+    const schedToday = state.habits.filter((h) => isScheduled(h, key));
+    const doneSched = schedToday.filter((h) => isDone(h, key)).length;
     const todayXp = doneList.reduce((s, h) => s + TYPES[h.type].xp, 0);
     const bestNow = state.habits.reduce((m, h) => Math.max(m, streakOf(h)), 0);
-    if (ui.lastLevel !== null && L.level > ui.lastLevel) toast(`Awans! Poziom ${L.level}: ${titleFor(L.level)}`);
+    const gotCount = ACHIEVEMENTS.filter((a) => state.unlocked[a.id]).length;
+    if (ui.lastLevel !== null && L.level > ui.lastLevel) say(`Awans! Poziom ${L.level}: ${titleFor(L.level)}`);
     ui.lastLevel = L.level;
     $('#hero').innerHTML = `
       <div class="hero">
@@ -539,14 +890,38 @@
           <div class="xpbar mt-2" role="progressbar" aria-label="Postęp do następnego poziomu" aria-valuemin="0" aria-valuemax="${L.need}" aria-valuenow="${L.into}"><i style="width:${(L.into / L.need) * 100}%"></i></div>
           <div class="text-xs text-muted mt-2">Do poziomu ${L.level + 1} brakuje ${L.need - L.into} XP. Razem zebrano ${xp} XP.</div>
         </div>
-        <div class="grid grid-cols-3 gap-2 col-span-2" style="grid-column: 1 / -1">
-          <div class="stat"><b>${doneList.length}/${state.habits.length}</b><span>nawyków zrobionych dziś</span></div>
+        <div class="hero-full grid grid-cols-3 gap-2">
+          <div class="stat"><b>${doneSched}/${schedToday.length}</b><span>zaplanowanych nawyków zrobionych dziś</span></div>
           <div class="stat"><b>+${todayXp}</b><span>XP zdobyte dziś</span></div>
           <div class="stat"><b>${bestNow} ${plDays(bestNow)}</b><span>najdłuższa aktywna seria</span></div>
+        </div>
+        <div class="hero-full flex flex-wrap gap-2">
+          <button class="btn" data-action="open-ach"><i data-lucide="trophy"></i>Odznaki <span class="cnt">${gotCount}/${ACHIEVEMENTS.length}</span></button>
+          <button class="btn" data-action="open-rewards"><i data-lucide="gift"></i>Nagrody <span class="cnt">${availableXp()} XP do wydania</span></button>
         </div>
       </div>`;
   }
 
+  function renderExams() {
+    $('#exams').innerHTML = EXAMS.map((ex) => {
+      const date = state.exams[ex.id] || '';
+      let big = '—', small = 'ustaw datę';
+      if (date) {
+        const n = daysUntil(date);
+        if (n > 0) { big = String(n); small = plDays(n); }
+        else if (n === 0) { big = 'Dziś'; small = 'egzamin!'; }
+        else { big = 'Po'; small = 'terminie'; }
+      }
+      return `
+        <div class="exam" style="--c:${ex.color}">
+          <div class="flex items-center gap-2 text-sm font-medium"><span class="dot"></span>${esc(ex.name)}</div>
+          <div class="exam-days"><b>${esc(big)}</b><span>${esc(small)}</span></div>
+          <input type="date" class="exam-date" data-exam="${ex.id}" value="${esc(date)}" aria-label="Data egzaminu: ${esc(ex.name)}">
+        </div>`;
+    }).join('');
+  }
+
+  /* ---------- Render: nawyki ---------- */
   function renderHabitFilters() {
     const host = $('#habitFilters');
     if (!state.habits.length) { host.innerHTML = ''; return; }
@@ -559,16 +934,116 @@
     host.innerHTML = chips.join('');
   }
 
+  const cellText = (h, v) => {
+    if (v <= 0) return '';
+    if (h.type === 'bool') return '✓';
+    if (h.type === 'count') return fmtNum(v);
+    const m = Math.round(v / 60);
+    return m < 1 ? '<1m' : `${m}m`;
+  };
+  const daysLabel = (h) => (h.days.length === 7 ? '' : DAY_ORDER.filter((d) => h.days.includes(d)).map((d) => WEEKDAYS[d]).join(', '));
+
+  function dayEditor(h, key) {
+    const v = valueOf(h, key), done = isDone(h, key);
+    const entry = state.logs[h.id] && state.logs[h.id][key];
+    const note = (entry && entry.note) || '';
+    const unit = h.unit ? ' ' + esc(h.unit) : '';
+    const label = keyToDate(key).toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' });
+    let ctl;
+    if (h.type === 'bool') {
+      ctl = `<button class="check-btn ${done ? 'is-done' : ''}" data-action="day-toggle" data-id="${h.id}" data-day="${key}" aria-pressed="${done}"><span class="check-box"><i data-lucide="check" class="sm"></i></span><span>${done ? 'Zrobione' : 'Oznacz jako zrobione'}</span></button>`;
+    } else if (h.type === 'count') {
+      ctl = `<div class="flex items-center gap-2">
+          <button class="round-btn" data-action="day-dec" data-id="${h.id}" data-day="${key}" aria-label="Zmniejsz o ${fmtNum(h.step)}${unit}"><i data-lucide="minus"></i></button>
+          <input class="field" style="width:96px;text-align:center" inputmode="decimal" data-dayval="1" data-id="${h.id}" data-day="${key}" value="${fmtNum(v).replace(/\s/g, '')}" aria-label="Wartość z tego dnia">
+          <span class="unit">/ ${fmtNum(h.target)}${unit}</span>
+          <button class="round-btn" data-action="day-inc" data-id="${h.id}" data-day="${key}" aria-label="Zwiększ o ${fmtNum(h.step)}${unit}"><i data-lucide="plus"></i></button>
+        </div>`;
+    } else {
+      ctl = `<div class="flex flex-wrap items-center gap-2">
+          <input class="field" style="width:96px;text-align:center" inputmode="numeric" data-dayval="1" data-id="${h.id}" data-day="${key}" value="${Math.round(v / 60)}" aria-label="Minuty z tego dnia">
+          <span class="unit">/ ${fmtNum(h.target)} min</span>
+          <div class="ml-auto flex gap-1">
+            <button class="mini-btn" data-action="day-submin" data-id="${h.id}" data-day="${key}" aria-label="Odejmij 5 minut">−5</button>
+            <button class="mini-btn" data-action="day-addmin" data-id="${h.id}" data-day="${key}" aria-label="Dodaj 5 minut">+5 min</button>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="dayedit">
+        <div class="text-sm font-medium">Edytujesz: ${esc(label)}</div>
+        ${ctl}
+        <input class="note-input" style="background:var(--panel)" data-daynote="1" data-id="${h.id}" data-day="${key}" data-fk="d:${h.id}:${key}" value="${esc(note)}" maxlength="200" placeholder="Notatka do tego dnia" aria-label="Notatka do wpisu z ${esc(label)}">
+      </div>`;
+  }
+
+  function calendarPanel(h) {
+    const st = ui.cal[h.id];
+    const [y, m] = st.month.split('-').map(Number);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    const lead = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+    const t = todayKey(), curMonth = t.slice(0, 7), minMonth = shiftMonth(curMonth, -24);
+    const unit = h.unit ? ' ' + esc(h.unit) : '';
+    let total = 0, entries = 0, doneCount = 0, doneSched = 0, sched = 0;
+    const cells = [];
+    for (let i = 0; i < lead; i++) cells.push('<span></span>');
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = `${y}-${pad(m)}-${pad(d)}`;
+      const future = key > t;
+      const v = future ? 0 : valueOf(h, key);
+      const done = !future && isDone(h, key);
+      const scheduled = isScheduled(h, key);
+      if (!future) {
+        total += v;
+        if (v > 0) entries++;
+        if (done) doneCount++;
+        if (scheduled) { sched++; if (done) doneSched++; }
+      }
+      const cls = ['cell', done ? 'is-done' : v > 0 ? 'is-part' : '', scheduled ? '' : 'is-off', future ? 'is-future' : '', key === t ? 'is-today' : '', st.day === key ? 'is-sel' : ''].filter(Boolean).join(' ');
+      cells.push(`<button class="${cls}" data-action="cal-day" data-id="${h.id}" data-day="${key}" ${future ? 'disabled' : ''} aria-label="${key}${done ? ', zrobione' : ''}"><span class="d">${d}</span><b>${esc(cellText(h, v))}</b></button>`);
+    }
+    const pct = sched ? Math.round((doneSched / sched) * 100) : 0;
+    let stats;
+    if (h.type === 'count') {
+      stats = [['Razem w miesiącu', `${fmtNum(total)}${unit}`], ['Średnio (dni z wpisem)', entries ? `${fmtNum(total / entries)}${unit}` : '—'], ['Cel osiągnięty', `${doneSched}/${sched} dni`]];
+    } else if (h.type === 'time') {
+      stats = [['Razem w miesiącu', fmtDur(total)], ['Średnio (dni z wpisem)', entries ? fmtDur(total / entries) : '—'], ['Cel osiągnięty', `${doneSched}/${sched} dni`]];
+    } else {
+      stats = [['Zrobione dni', String(doneCount)], ['Zaplanowane do dziś', String(sched)], ['Skuteczność', `${pct}%`]];
+    }
+    const title = new Date(y, m - 1, 1).toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+    return `
+      <div class="cal">
+        <div class="cal-head">
+          <button class="icon-btn" data-action="cal-prev" data-id="${h.id}" aria-label="Poprzedni miesiąc" ${st.month <= minMonth ? 'disabled' : ''}><i data-lucide="chevron-left"></i></button>
+          <div class="font-display font-bold" style="text-transform:capitalize">${esc(title)}</div>
+          <button class="icon-btn" data-action="cal-next" data-id="${h.id}" aria-label="Następny miesiąc" ${st.month >= curMonth ? 'disabled' : ''}><i data-lucide="chevron-right"></i></button>
+        </div>
+        <div class="cal-stats">${stats.map(([l, v]) => `<div class="stat"><b style="font-size:17px">${esc(v)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+        <div class="cal-grid" role="group" aria-label="Kalendarz: ${esc(title)}">
+          ${['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'].map((w) => `<span class="cal-wd">${w}</span>`).join('')}
+          ${cells.join('')}
+        </div>
+        <p class="text-xs text-muted mt-2">Kliknij dzień, żeby uzupełnić lub poprawić wpis.</p>
+        ${st.day && st.day <= t ? dayEditor(h, st.day) : ''}
+      </div>`;
+  }
+
   function habitCard(h) {
     const cat = CATEGORIES[h.category], key = todayKey();
     const goal = goalOf(h), val = valueOf(h, key), done = isDone(h, key);
     const pct = goal > 0 ? Math.min(100, (val / goal) * 100) : 0;
     const streak = streakOf(h), best = bestStreakOf(h);
-    const note = (state.logs[h.id] && state.logs[h.id][key] && state.logs[h.id][key].note) || '';
+    const entry = state.logs[h.id] && state.logs[h.id][key];
+    const note = (entry && entry.note) || '';
     const noteOpen = !!note || ui.openNotes.has(h.id);
     const armed = ui.armed === 'h:' + h.id;
     const unit = h.unit ? ' ' + esc(h.unit) : '';
     const running = !!state.timers[h.id];
+    const pomo = state.pomodoro && state.pomodoro.habitId === h.id ? state.pomodoro : null;
+    const offToday = !isScheduled(h, key);
+    const calOpen = !!ui.cal[h.id];
+    const dl = daysLabel(h);
     const goalText = h.type === 'bool' ? 'Tak/Nie' : h.type === 'count' ? `cel: ${fmtNum(h.target)}${unit}` : `cel: ${fmtNum(h.target)} min`;
 
     let controls = '';
@@ -588,10 +1063,11 @@
         </div>
         <div class="bar"><i data-bar style="width:${pct}%"></i></div>`;
     } else {
+      const stopLabel = running || pomo;
       controls = `
         <div class="flex flex-wrap items-center gap-3">
-          <button class="timer-btn ${running ? 'is-running' : ''}" data-action="timer" data-id="${h.id}" aria-label="${running ? 'Zatrzymaj stoper' : 'Uruchom stoper'}">
-            ${running ? '<span class="pulse"></span><i data-lucide="square" class="sm"></i>Stop' : '<i data-lucide="play" class="sm"></i>Start'}
+          <button class="timer-btn ${stopLabel ? 'is-running' : ''}" data-action="timer" data-id="${h.id}" aria-label="${stopLabel ? 'Zatrzymaj stoper' : 'Uruchom stoper'}">
+            ${stopLabel ? '<span class="pulse"></span><i data-lucide="square" class="sm"></i>Stop' : '<i data-lucide="play" class="sm"></i>Start'}
           </button>
           <div><span class="num" data-clock>${fmtClock(val)}</span><span class="unit"> / ${fmtNum(h.target)} min</span></div>
           ${done ? '<i data-lucide="check" style="color:var(--c)" aria-label="Cel osiągnięty"></i>' : ''}
@@ -600,18 +1076,23 @@
             <button class="mini-btn" data-action="addmin" data-id="${h.id}" aria-label="Dodaj 5 minut">+5 min</button>
           </div>
         </div>
-        <div class="bar"><i data-bar style="width:${pct}%"></i></div>`;
+        <div class="bar"><i data-bar style="width:${pct}%"></i></div>
+        <div class="flex flex-wrap items-center gap-2 mt-3">
+          ${pomo
+            ? `<span class="pomo"><span class="pulse"></span><span data-pomo>${pomoLabel(pomo)}</span></span><button class="mini-btn" data-action="pomo-stop" data-id="${h.id}">Zakończ Pomodoro</button>`
+            : `<button class="mini-btn" data-action="pomo-start" data-id="${h.id}"><i data-lucide="hourglass" class="sm"></i>Pomodoro 25/5</button>`}
+        </div>`;
     }
 
     let week = '';
     for (let i = 6; i >= 0; i--) {
       const k = shiftKey(key, -i);
-      const [y, m, d] = k.split('-').map(Number);
-      week += `<div class="wd ${i === 0 ? 'is-today' : ''}" title="${k}"><i class="sq ${isDone(h, k) ? 'on' : ''}"></i><span>${WEEKDAYS[new Date(y, m - 1, d).getDay()]}</span></div>`;
+      const wd = WEEKDAYS[dayOfWeek(k)];
+      week += `<div class="wd ${i === 0 ? 'is-today' : ''}" title="${k}"><i class="sq ${isDone(h, k) ? 'on' : ''} ${isScheduled(h, k) ? '' : 'off'}"></i><span>${wd}</span></div>`;
     }
 
     const noteRow = noteOpen
-      ? `<input class="note-input" data-note="${h.id}" value="${esc(note)}" maxlength="200" placeholder="Notatka do dzisiejszego wpisu, np. ciężki trening" aria-label="Notatka do dzisiejszego wpisu: ${esc(h.name)}">`
+      ? `<input class="note-input" data-note="${h.id}" data-fk="n:${h.id}" value="${esc(note)}" maxlength="200" placeholder="Notatka do dzisiejszego wpisu, np. ciężki trening" aria-label="Notatka do dzisiejszego wpisu: ${esc(h.name)}">`
       : `<button class="note-add" data-action="note-open" data-id="${h.id}"><i data-lucide="message-square-plus" class="sm"></i>Dodaj notatkę do dzisiejszego wpisu</button>`;
 
     return `
@@ -619,20 +1100,24 @@
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <h3 class="font-display text-lg font-bold leading-tight break-words">${esc(h.name)}</h3>
-            <div class="flex items-center gap-2 mt-1 text-sm text-muted"><span class="dot"></span>${cat.label}<span aria-hidden="true">/</span>${goalText}</div>
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-sm text-muted"><span class="dot"></span>${cat.label}<span aria-hidden="true">/</span>${goalText}${dl ? `<span aria-hidden="true">/</span>${dl}` : ''}${offToday ? '<span class="off-badge">dziś wolne</span>' : ''}</div>
           </div>
           <div class="flex items-center gap-1 shrink-0">
-            <span class="streak ${streak > 0 ? 'hot' : ''}" title="Aktualna seria dni z rzędu"><i data-lucide="flame" class="sm"></i>${streak} ${plDays(streak)}</span>
+            <span class="streak ${streak > 0 ? 'hot' : ''}" title="Aktualna seria (dni wolne jej nie przerywają)"><i data-lucide="flame" class="sm"></i>${streak} ${plDays(streak)}</span>
             <button class="icon-btn" data-action="edit-habit" data-id="${h.id}" aria-label="Edytuj nawyk ${esc(h.name)}"><i data-lucide="pencil" class="sm"></i></button>
             <button class="icon-btn ${armed ? 'armed' : ''}" data-action="delete-habit" data-id="${h.id}" aria-label="Usuń nawyk ${esc(h.name)}">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>
           </div>
         </div>
         <div class="mt-4">${controls}</div>
-        <div class="flex items-end justify-between gap-3 mt-4">
+        <div class="flex flex-wrap items-end justify-between gap-3 mt-4">
           <div class="week" aria-label="Ostatnie 7 dni">${week}</div>
-          <span class="text-xs text-muted">rekord: ${best} ${plDays(best)}</span>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-muted">rekord: ${best} ${plDays(best)}</span>
+            <button class="mini-btn" data-action="cal-toggle" data-id="${h.id}" aria-expanded="${calOpen}"><i data-lucide="calendar-days" class="sm"></i>Kalendarz</button>
+          </div>
         </div>
         <div class="mt-3">${noteRow}</div>
+        ${calOpen ? calendarPanel(h) : ''}
       </article>`;
   }
 
@@ -655,8 +1140,12 @@
     host.innerHTML = list.length ? list.map(habitCard).join('') : '<p class="text-sm text-muted py-6 text-center">Brak nawyków w tej kategorii.</p>';
   }
 
+  /* ---------- Render: notatki ---------- */
+  const noteSearchText = (n) => (n.list ? n.items.map((i) => i.t).join('\n') : n.text);
+
   function renderNoteFilters() {
     const host = $('#noteFilters');
+    $('#noteSearchWrap').hidden = !state.notes.length;
     if (!state.notes.length) { host.innerHTML = ''; return; }
     const chips = [`<button class="chip" data-action="filter-note" data-value="all" aria-pressed="${ui.noteFilter === 'all'}">Wszystkie <span class="cnt">${state.notes.length}</span></button>`];
     for (const [k, c] of Object.entries(NOTE_CATS)) {
@@ -664,6 +1153,46 @@
       chips.push(`<button class="chip" style="--c:${c.color}" data-action="filter-note" data-value="${k}" aria-pressed="${ui.noteFilter === k}"><span class="dot"></span>${c.label} <span class="cnt">${n}</span></button>`);
     }
     host.innerHTML = chips.join('');
+  }
+
+  function noteTile(n) {
+    const c = NOTE_CATS[n.category];
+    const armed = ui.armed === 'n:' + n.id;
+    const editing = ui.editingNote === n.id && ui.editDraft;
+    const when = new Date(n.createdAt).toLocaleString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    let body;
+    if (editing) {
+      const chips = Object.entries(NOTE_CATS).map(([k, cc]) => `<button type="button" class="chip" style="--c:${cc.color}" data-action="edit-cat" data-cat="${k}" aria-pressed="${ui.editDraft.category === k}"><span class="dot"></span>${cc.label}</button>`).join('');
+      body = `
+        <textarea class="field" rows="5" maxlength="2000" data-edit-note data-fk="e" aria-label="Edytuj notatkę">${esc(ui.editDraft.text)}</textarea>
+        ${n.list ? '<p class="text-xs text-muted">Każda linia to jeden punkt listy.</p>' : ''}
+        <div class="flex flex-wrap gap-2">${chips}</div>
+        <div class="flex justify-end gap-2">
+          <button class="btn btn-sm" data-action="cancel-edit">Anuluj</button>
+          <button class="btn btn-sm btn-primary" data-action="save-edit">Zapisz</button>
+        </div>`;
+    } else if (n.list) {
+      body = '<div>' + n.items.map((it, i) => `<button class="li ${it.d ? 'is-done' : ''}" data-action="note-item" data-id="${n.id}" data-i="${i}" aria-pressed="${it.d}"><span class="box"><i data-lucide="check" class="xs"></i></span><span class="t">${esc(it.t)}</span></button>`).join('') + '</div>';
+    } else {
+      body = `<p>${esc(n.text)}</p>`;
+    }
+    const doneCount = n.list ? n.items.filter((i) => i.d).length : 0;
+    return `
+      <article class="tile ${n.pinned ? 'is-pinned' : ''} ${editing ? 'is-editing' : ''}" style="--c:${c.color}">
+        <div class="flex items-center justify-between gap-2">
+          <span class="flex items-center gap-2 text-xs text-muted"><span class="dot"></span>${c.label}</span>
+          <div class="flex items-center">
+            <button class="icon-btn" data-action="note-pin" data-id="${n.id}" aria-pressed="${n.pinned}" aria-label="${n.pinned ? 'Odepnij notatkę' : 'Przypnij notatkę'}"><i data-lucide="pin" class="sm"></i></button>
+            <button class="icon-btn" data-action="note-edit" data-id="${n.id}" aria-label="Edytuj notatkę"><i data-lucide="pencil" class="sm"></i></button>
+            <button class="icon-btn ${armed ? 'armed' : ''}" data-action="delete-note" data-id="${n.id}" aria-label="Usuń notatkę">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>
+          </div>
+        </div>
+        ${body}
+        <div class="flex items-center justify-between gap-2 text-xs text-muted">
+          <time datetime="${new Date(n.createdAt).toISOString()}">${when}</time>
+          ${n.list ? `<span>${doneCount}/${n.items.length} zrobione</span>` : ''}
+        </div>
+      </article>`;
   }
 
   function renderNotes() {
@@ -677,66 +1206,92 @@
         </div>`;
       return;
     }
-    const list = state.notes.filter((n) => ui.noteFilter === 'all' || n.category === ui.noteFilter).sort((a, b) => b.createdAt - a.createdAt);
-    if (!list.length) { host.innerHTML = '<p class="text-sm text-muted py-6 text-center">Brak notatek w tej kategorii.</p>'; return; }
-    host.innerHTML = '<div class="tiles">' + list.map((n) => {
-      const c = NOTE_CATS[n.category];
-      const armed = ui.armed === 'n:' + n.id;
-      const when = new Date(n.createdAt).toLocaleString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const q = ui.search.trim().toLowerCase();
+    const list = state.notes
+      .filter((n) => (ui.noteFilter === 'all' || n.category === ui.noteFilter) && (!q || noteSearchText(n).toLowerCase().includes(q)))
+      .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt - a.createdAt);
+    if (!list.length) { host.innerHTML = `<p class="text-sm text-muted py-6 text-center">${q ? 'Nic nie pasuje do wyszukiwania.' : 'Brak notatek w tej kategorii.'}</p>`; return; }
+    host.innerHTML = '<div class="tiles">' + list.map(noteTile).join('') + '</div>';
+  }
+  function renderNotesOnly() { renderNoteFilters(); renderNotes(); refreshIcons(); }
+
+  /* ---------- Render: nagrody i odznaki ---------- */
+  function renderRewards() {
+    const avail = availableXp();
+    const list = state.rewards.map((r) => {
+      const can = avail >= r.cost;
+      const armed = ui.armed === 'r:' + r.id;
       return `
-        <article class="tile" style="--c:${c.color}">
-          <div class="flex items-center justify-between gap-2">
-            <span class="flex items-center gap-2 text-xs text-muted"><span class="dot"></span>${c.label}</span>
-            <button class="icon-btn ${armed ? 'armed' : ''}" data-action="delete-note" data-id="${n.id}" aria-label="Usuń notatkę">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>
+        <div class="reward">
+          <div class="min-w-0 flex-1">
+            <div class="font-medium break-words">${esc(r.name)}</div>
+            <div class="text-xs text-muted">${r.cost} XP</div>
           </div>
-          <p>${esc(n.text)}</p>
-          <time class="text-xs text-muted" datetime="${new Date(n.createdAt).toISOString()}">${when}</time>
-        </article>`;
+          <button class="btn btn-sm ${can ? 'btn-primary' : ''}" data-action="redeem" data-id="${r.id}" ${can ? '' : 'disabled'}>Odbierz</button>
+          <button class="icon-btn ${armed ? 'armed' : ''}" data-action="delete-reward" data-id="${r.id}" aria-label="Usuń nagrodę ${esc(r.name)}">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>
+        </div>`;
+    }).join('');
+    const history = state.redeemed.slice(0, 5).map((r) => `<li class="flex justify-between gap-3"><span class="break-words">${esc(r.name)}</span><span class="text-muted shrink-0">${new Date(r.at).toLocaleDateString('pl-PL')}, ${r.cost} XP</span></li>`).join('');
+    $('#rewardsBody').innerHTML = `
+      <div class="stat mb-3"><b>${avail} XP</b><span>do wydania (zdobyto łącznie ${totalXp()} XP, wydano ${state.spentXp} XP)</span></div>
+      <div class="flex flex-col gap-2">${list || '<p class="text-sm text-muted">Nie masz jeszcze nagród. Dodaj pierwszą poniżej, np. odcinek serialu za 100 XP.</p>'}</div>
+      ${history ? `<div class="mt-4"><span class="label">Ostatnio odebrane</span><ul class="text-sm flex flex-col gap-1">${history}</ul></div>` : ''}`;
+  }
+
+  function renderAchievements() {
+    const ctx = makeCtx();
+    $('#achBody').innerHTML = '<div class="ach-grid">' + ACHIEVEMENTS.map((a) => {
+      const [cur, max] = a.progress(ctx);
+      const got = state.unlocked[a.id];
+      const pct = Math.min(100, (cur / max) * 100);
+      const extra = got
+        ? `<div class="text-xs mt-1" style="color:var(--gold-text)">Zdobyta ${new Date(got).toLocaleDateString('pl-PL')}</div>`
+        : `<div class="bar" style="--c:var(--gold);margin-top:8px;height:4px"><i style="width:${pct}%"></i></div><div class="text-xs text-muted mt-1">${fmtNum(Math.min(cur, max))} / ${fmtNum(max)}</div>`;
+      return `
+        <div class="ach ${got ? 'is-got' : ''}">
+          <span class="ach-ico"><i data-lucide="${a.icon}"></i></span>
+          <div class="min-w-0"><div class="font-semibold text-sm">${esc(a.name)}</div><div class="text-xs text-muted">${esc(a.desc)}</div>${extra}</div>
+        </div>`;
     }).join('') + '</div>';
   }
 
-  function renderChrome() {
-    document.documentElement.dataset.theme = state.theme;
-    $('#themeBtn').innerHTML = `<i data-lucide="${state.theme === 'dark' ? 'sun' : 'moon'}"></i>`;
-    $('#today').textContent = new Date().toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' });
-    $('#storageWarn').hidden = storageOk;
-    syncNoteCats();
-  }
-  function syncNoteCats() {
-    document.querySelectorAll('#noteCats [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === ui.noteCat)));
-  }
-
+  /* ---------- Główny render ---------- */
   function render() {
     const ae = document.activeElement;
-    const keep = ae && ae.dataset && ae.dataset.note ? { id: ae.dataset.note, s: ae.selectionStart, e: ae.selectionEnd } : null;
+    const keep = ae && ae.dataset && ae.dataset.fk ? { fk: ae.dataset.fk, s: ae.selectionStart, e: ae.selectionEnd } : null;
     renderedDay = todayKey();
+    const fresh = checkAchievements();   // zapisuje nowo zdobyte odznaki
+    if (fresh.length) { save(); say(`Nowa odznaka: ${fresh.map((a) => a.name).join(', ')}`); }
     renderChrome();
     renderHero();
+    renderExams();
     renderHabitFilters();
     renderHabits();
     renderNoteFilters();
     renderNotes();
-    if (window.lucide) { try { window.lucide.createIcons(); } catch (e) { /* ikony są opcjonalne */ } }
-    const targetId = ui.focusNote || (keep && keep.id);
-    if (targetId) {
-      const input = document.querySelector(`[data-note="${targetId}"]`);
+    if (!$('#rewardsModal').hidden) renderRewards();
+    if (!$('#achModal').hidden) renderAchievements();
+    refreshIcons();
+    const fk = ui.focusFk || (keep && keep.fk);
+    if (fk) {
+      const input = document.querySelector(`[data-fk="${fk}"]`);
       if (input) {
         input.focus();
-        const start = ui.focusNote ? input.value.length : keep.s;
-        const end = ui.focusNote ? input.value.length : keep.e;
-        try { input.setSelectionRange(start, end); } catch (e) { /* ignoruj */ }
+        const start = ui.focusFk ? input.value.length : keep.s;
+        const end = ui.focusFk ? input.value.length : keep.e;
+        try { if (start != null) input.setSelectionRange(start, end); } catch (e) { /* ignoruj */ }
       }
-      ui.focusNote = null;
+      ui.focusFk = null;
     }
+    if (ui.msgs.length) { const msg = ui.msgs.join('  |  '); ui.msgs = []; toast(msg); }
   }
 
-  /* ---------- Stoper: aktualizacja bez pełnego renderu ---------- */
+  /* ---------- Stoper i Pomodoro: aktualizacja bez pełnego renderu ---------- */
   function tick() {
     if (todayKey() !== renderedDay) { render(); return; }
-    const ids = Object.keys(state.timers);
-    if (!ids.length) return;
+    if (advancePomodoro()) { save(); render(); return; }
     let flipped = null;
-    for (const id of ids) {
+    for (const id of Object.keys(state.timers)) {
       const h = habitById(id);
       if (!h) { delete state.timers[id]; continue; }
       const card = document.querySelector(`[data-habit="${id}"]`);
@@ -748,8 +1303,12 @@
       if (bar) bar.style.width = Math.min(100, (v / goal) * 100) + '%';
       if ((card.dataset.done === '1') !== isDone(h, key)) flipped = h;
     }
+    if (state.pomodoro) {
+      const el = document.querySelector(`[data-habit="${state.pomodoro.habitId}"] [data-pomo]`);
+      if (el) el.textContent = pomoLabel(state.pomodoro);
+    }
     if (flipped) {
-      if (isDone(flipped, todayKey())) toast(`+${TYPES[flipped.type].xp} XP: ${flipped.name}`);
+      if (isDone(flipped, todayKey())) say(`+${TYPES[flipped.type].xp} XP: ${flipped.name}`);
       render();
     }
   }
@@ -766,13 +1325,14 @@
       b.disabled = !!f.editingId && b.dataset.type !== f.type;
     });
     document.querySelectorAll('#fCats [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === f.category)));
+    document.querySelectorAll('#fDays [data-day]').forEach((b) => b.setAttribute('aria-pressed', String(f.days.includes(Number(b.dataset.day)))));
     $('#fCountFields').hidden = f.type !== 'count';
     $('#fTimeFields').hidden = f.type !== 'time';
     $('#fTypeHint').hidden = !f.editingId;
   }
   function openHabitForm(id) {
     const h = id ? habitById(id) : null;
-    ui.form = { editingId: h ? h.id : null, type: h ? h.type : 'bool', category: h ? h.category : 'school' };
+    ui.form = { editingId: h ? h.id : null, type: h ? h.type : 'bool', category: h ? h.category : 'school', days: h ? [...h.days] : [0, 1, 2, 3, 4, 5, 6] };
     $('#habitModalTitle').textContent = h ? 'Edytuj nawyk' : 'Nowy nawyk';
     $('#fSave').textContent = h ? 'Zapisz zmiany' : 'Dodaj nawyk';
     $('#fName').value = h ? h.name : '';
@@ -788,6 +1348,7 @@
   function submitHabit() {
     const name = $('#fName').value.trim();
     if (!name) { showFormError('Podaj nazwę nawyku.'); $('#fName').focus(); return; }
+    if (!ui.form.days.length) { showFormError('Zaznacz przynajmniej jeden dzień tygodnia.'); return; }
     const type = ui.form.type;
     let target = 1, unit = '', step = 1;
     if (type === 'count') {
@@ -802,27 +1363,29 @@
     }
     target = clampNum(target, 0.01, 100000, 1);
     step = clampNum(step, 0.01, 10000, 1);
+    const days = [...ui.form.days].sort((a, b) => a - b);
     const editing = ui.form.editingId ? habitById(ui.form.editingId) : null;
     if (editing) {
-      Object.assign(editing, { name, category: ui.form.category, target, unit, step });
-      toast('Zapisano zmiany');
+      Object.assign(editing, { name, category: ui.form.category, target, unit, step, days });
+      say('Zapisano zmiany');
     } else {
-      state.habits.push({ id: uid(), name, type, category: ui.form.category, target, unit, step, createdAt: Date.now() });
-      toast('Dodano nowy nawyk');
+      state.habits.push({ id: uid(), name, type, category: ui.form.category, target, unit, step, days, createdAt: Date.now() });
+      say('Dodano nowy nawyk');
     }
     closeModals();
     commit();
   }
 
   function addSampleHabits() {
+    const all = [0, 1, 2, 3, 4, 5, 6];
     const samples = [
-      { name: 'Woda', type: 'count', category: 'health', target: 2, unit: 'l', step: 0.25 },
-      { name: 'Nauka do matury', type: 'time', category: 'school', target: 90 },
-      { name: 'Trening', type: 'bool', category: 'sport' },
-      { name: 'Czytanie', type: 'time', category: 'growth', target: 20 }
+      { name: 'Woda', type: 'count', category: 'health', target: 2, unit: 'l', step: 0.25, days: all },
+      { name: 'Nauka do matury', type: 'time', category: 'school', target: 90, days: all },
+      { name: 'Trening', type: 'bool', category: 'sport', days: [1, 3, 5] },
+      { name: 'Czytanie', type: 'time', category: 'growth', target: 20, days: all }
     ];
     for (const s of samples) {
-      state.habits.push({ id: uid(), name: s.name, type: s.type, category: s.category, target: s.target || 1, unit: s.unit || '', step: s.step || 1, createdAt: Date.now() });
+      state.habits.push({ id: uid(), name: s.name, type: s.type, category: s.category, target: s.target || 1, unit: s.unit || '', step: s.step || 1, days: s.days, createdAt: Date.now() });
     }
     commit();
   }
@@ -830,10 +1393,12 @@
   function deleteHabit(id) {
     const h = habitById(id);
     if (!h) return;
+    if (state.pomodoro && state.pomodoro.habitId === id) state.pomodoro = null;
     state.bankedXp += xpOfHabit(h);
     state.habits = state.habits.filter((x) => x.id !== id);
     delete state.logs[id];
     delete state.timers[id];
+    delete ui.cal[id];
     ui.openNotes.delete(id);
     commit();
   }
@@ -843,15 +1408,76 @@
     const area = $('#noteText');
     const text = area.value.trim();
     if (!text) { toast('Wpisz treść notatki.'); area.focus(); return; }
-    state.notes.unshift({ id: uid(), text: text.slice(0, 2000), category: ui.noteCat, createdAt: Date.now() });
+    const base = { id: uid(), category: ui.noteCat, pinned: false, createdAt: Date.now() };
+    if (ui.noteAsList) {
+      const items = parseItems(text);
+      if (!items.length) { toast('Wpisz przynajmniej jeden punkt listy.'); return; }
+      state.notes.unshift({ ...base, text: '', list: true, items });
+    } else {
+      state.notes.unshift({ ...base, text: text.slice(0, 2000), list: false, items: [] });
+    }
     area.value = '';
+    say('Notatka dodana');
     commit();
-    toast('Notatka dodana');
+  }
+  function startEditNote(id) {
+    const n = state.notes.find((x) => x.id === id);
+    if (!n) return;
+    ui.editingNote = id;
+    ui.editDraft = { text: n.list ? n.items.map((i) => i.t).join('\n') : n.text, category: n.category };
+    ui.focusFk = 'e';
+    render();
+  }
+  function cancelEditNote() { ui.editingNote = null; ui.editDraft = null; render(); }
+  function saveEditNote() {
+    const n = state.notes.find((x) => x.id === ui.editingNote);
+    if (!n || !ui.editDraft) { cancelEditNote(); return; }
+    const text = ui.editDraft.text.trim();
+    if (!text) { toast('Notatka nie może być pusta.'); return; }
+    if (n.list) {
+      const items = parseItems(text, n.items);
+      if (!items.length) { toast('Wpisz przynajmniej jeden punkt listy.'); return; }
+      n.items = items;
+    } else {
+      n.text = text.slice(0, 2000);
+    }
+    n.category = ui.editDraft.category;
+    ui.editingNote = null; ui.editDraft = null;
+    say('Notatka zapisana');
+    commit();
+  }
+
+  /* ---------- Nagrody ---------- */
+  function addReward() {
+    const name = $('#rewardName').value.trim();
+    const cost = Math.round(parseNum($('#rewardCost').value));
+    const err = $('#rewardError');
+    if (!name) { err.textContent = 'Podaj nazwę nagrody.'; err.hidden = false; return; }
+    if (!(cost >= 1 && cost <= 100000)) { err.textContent = 'Koszt musi być liczbą od 1 do 100000 XP.'; err.hidden = false; return; }
+    err.hidden = true;
+    state.rewards.push({ id: uid(), name: name.slice(0, 60), cost });
+    $('#rewardName').value = '';
+    commit();
+  }
+  function redeemReward(id) {
+    const r = state.rewards.find((x) => x.id === id);
+    if (!r) return;
+    if (availableXp() < r.cost) { toast('Za mało XP na tę nagrodę.'); return; }
+    state.spentXp += r.cost;
+    state.redeemed.unshift({ id: uid(), name: r.name, cost: r.cost, at: Date.now() });
+    state.redeemed = state.redeemed.slice(0, 50);
+    say(`Odebrano nagrodę: ${r.name}. Miłego!`);
+    commit();
   }
 
   /* ---------- Eksport / import ---------- */
-  const buildExport = () => JSON.stringify({ app: 'questlog', exportedAt: new Date().toISOString(), ...state }, null, 2);
+  const buildExport = (stamp) => JSON.stringify({ app: 'questlog', exportedAt: new Date(stamp).toISOString(), ...state, lastExportAt: stamp }, null, 2);
 
+  function markExported(stamp) {
+    state.lastExportAt = stamp;
+    say('Kopia zapasowa gotowa');
+    commit();
+  }
   function browserDownload(name, text) {
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
     const a = document.createElement('a');
@@ -859,36 +1485,42 @@
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
   }
-  function openExportFallback(text) {
+  function openExportFallback(text, stamp) {
+    ui.exportStamp = stamp;
     $('#exportText').value = text;
     openModal('exportModal');
-    if (window.lucide) { try { window.lucide.createIcons(); } catch (e) { /* ikony są opcjonalne */ } }
+    refreshIcons();
   }
   async function exportData() {
-    const text = buildExport();
+    const stamp = Date.now();
+    const text = buildExport(stamp);
     const name = `questlog-kopia-${todayKey()}.txt`;
     if (downloadsApi) {
       try {
         await downloadsApi.save({ filename: name, data: text });
-        toast('Kopia zapasowa gotowa');
+        markExported(stamp);
       } catch (err) {
         if (err && err.code === 'declined') toast('Zapis anulowany');
-        else openExportFallback(text);
+        else openExportFallback(text, stamp);
       }
       return;
     }
     if (!hasClaudeHost) {
-      try { browserDownload(name, text); toast('Kopia zapasowa pobrana'); } catch (e) { openExportFallback(text); }
+      try { browserDownload(name, text); markExported(stamp); } catch (e) { openExportFallback(text, stamp); }
       return;
     }
-    openExportFallback(text);
+    openExportFallback(text, stamp);
   }
   async function copyExport() {
     const ta = $('#exportText');
-    try { await navigator.clipboard.writeText(ta.value); toast('Skopiowano do schowka'); return; } catch (e) { /* próbujemy dalej */ }
-    ta.focus(); ta.select();
-    try { if (document.execCommand('copy')) { toast('Skopiowano do schowka'); return; } } catch (e) { /* ignoruj */ }
-    toast('Tekst jest zaznaczony, skopiuj go skrótem Ctrl + C');
+    let ok = false;
+    try { await navigator.clipboard.writeText(ta.value); ok = true; } catch (e) { /* próbujemy dalej */ }
+    if (!ok) {
+      ta.focus(); ta.select();
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    }
+    if (ok) { if (ui.exportStamp) markExported(ui.exportStamp); else toast('Skopiowano do schowka'); }
+    else toast('Tekst jest zaznaczony, skopiuj go skrótem Ctrl + C');
   }
   async function handleImportFile(file) {
     try {
@@ -907,37 +1539,87 @@
   document.addEventListener('click', (e) => {
     if (e.target.classList && e.target.classList.contains('overlay')) { closeModals(); return; }
     const el = e.target.closest('[data-action]');
-    if (!el) return;
-    const { action, id, value } = el.dataset;
+    if (!el || el.disabled) return;
+    const { action, id, value, day } = el.dataset;
     const h = id ? habitById(id) : null;
     const key = todayKey();
+    const dayOk = !!(h && day && day <= key);
 
     switch (action) {
       case 'new-habit': openHabitForm(); break;
       case 'edit-habit': openHabitForm(id); break;
       case 'save-habit': submitHabit(); break;
       case 'close-modal': closeModals(); break;
-      case 'pick-type': if (!el.disabled) { ui.form.type = el.dataset.type; showFormError(''); syncForm(); } break;
+      case 'pick-type': ui.form.type = el.dataset.type; showFormError(''); syncForm(); break;
       case 'pick-cat': ui.form.category = el.dataset.cat; syncForm(); break;
+      case 'pick-day': {
+        const d = Number(el.dataset.day);
+        ui.form.days = ui.form.days.includes(d) ? ui.form.days.filter((x) => x !== d) : [...ui.form.days, d];
+        showFormError(''); syncForm();
+        break;
+      }
       case 'sample-habits': addSampleHabits(); break;
       case 'delete-habit': arm('h:' + id, () => deleteHabit(id)); break;
       case 'filter-habit': ui.habitFilter = value; render(); break;
+
       case 'toggle': if (h) trackXp(h, () => { ensureEntry(id, key).value = isDone(h, key) ? 0 : 1; }); break;
       case 'inc': if (h) trackXp(h, () => { const en = ensureEntry(id, key); en.value = round2(en.value + h.step); }); break;
       case 'dec': if (h) trackXp(h, () => { const en = ensureEntry(id, key); en.value = round2(Math.max(0, en.value - h.step)); }); break;
       case 'addmin': if (h) trackXp(h, () => addSeconds(id, key, 300)); break;
       case 'submin': if (h) trackXp(h, () => addSeconds(id, key, -300)); break;
       case 'timer':
-        if (h) trackXp(h, () => {
-          if (state.timers[id]) { commitElapsed(id, state.timers[id], Date.now()); delete state.timers[id]; }
-          else { state.timers[id] = Date.now(); }
-        });
+        if (h) {
+          if (state.pomodoro && state.pomodoro.habitId === id) trackXp(h, endPomodoro);
+          else trackXp(h, () => {
+            if (state.timers[id]) { commitElapsed(id, state.timers[id], Date.now()); delete state.timers[id]; }
+            else { state.timers[id] = Date.now(); }
+          });
+        }
         break;
-      case 'note-open': ui.openNotes.add(id); ui.focusNote = id; render(); break;
-      case 'pick-note-cat': ui.noteCat = el.dataset.cat; syncNoteCats(); break;
+      case 'pomo-start': if (h) trackXp(h, () => startPomodoro(id)); break;
+      case 'pomo-stop': if (h) trackXp(h, endPomodoro); break;
+      case 'note-open': ui.openNotes.add(id); ui.focusFk = 'n:' + id; render(); break;
+
+      case 'cal-toggle':
+        if (h) { if (ui.cal[id]) delete ui.cal[id]; else ui.cal[id] = { month: key.slice(0, 7), day: null }; render(); }
+        break;
+      case 'cal-prev': if (ui.cal[id]) { ui.cal[id].month = shiftMonth(ui.cal[id].month, -1); ui.cal[id].day = null; render(); } break;
+      case 'cal-next': if (ui.cal[id]) { ui.cal[id].month = shiftMonth(ui.cal[id].month, 1); ui.cal[id].day = null; render(); } break;
+      case 'cal-day': if (dayOk && ui.cal[id]) { ui.cal[id].day = ui.cal[id].day === day ? null : day; render(); } break;
+      case 'day-toggle': if (dayOk) trackXp(h, () => { ensureEntry(id, day).value = isDone(h, day) ? 0 : 1; }, day); break;
+      case 'day-inc': if (dayOk) trackXp(h, () => { const en = ensureEntry(id, day); en.value = round2(en.value + h.step); }, day); break;
+      case 'day-dec': if (dayOk) trackXp(h, () => { const en = ensureEntry(id, day); en.value = round2(Math.max(0, en.value - h.step)); }, day); break;
+      case 'day-addmin': if (dayOk) trackXp(h, () => addSeconds(id, day, 300), day); break;
+      case 'day-submin': if (dayOk) trackXp(h, () => addSeconds(id, day, -300), day); break;
+
+      case 'pick-note-cat': ui.noteCat = el.dataset.cat; syncNoteControls(); break;
+      case 'toggle-note-list': ui.noteAsList = !ui.noteAsList; syncNoteControls(); break;
       case 'add-note': addNote(); break;
       case 'filter-note': ui.noteFilter = value; render(); break;
-      case 'delete-note': arm('n:' + id, () => { state.notes = state.notes.filter((n) => n.id !== id); commit(); }); break;
+      case 'delete-note':
+        arm('n:' + id, () => {
+          if (ui.editingNote === id) { ui.editingNote = null; ui.editDraft = null; }
+          state.notes = state.notes.filter((n) => n.id !== id);
+          commit();
+        });
+        break;
+      case 'note-pin': { const n = state.notes.find((x) => x.id === id); if (n) { n.pinned = !n.pinned; commit(); } break; }
+      case 'note-edit': startEditNote(id); break;
+      case 'edit-cat': if (ui.editDraft) { ui.editDraft.category = el.dataset.cat; render(); } break;
+      case 'save-edit': saveEditNote(); break;
+      case 'cancel-edit': cancelEditNote(); break;
+      case 'note-item': {
+        const n = state.notes.find((x) => x.id === id), i = Number(el.dataset.i);
+        if (n && n.items[i]) { n.items[i].d = !n.items[i].d; commit(); }
+        break;
+      }
+
+      case 'open-rewards': openModal('rewardsModal'); renderRewards(); refreshIcons(); break;
+      case 'open-ach': openModal('achModal'); renderAchievements(); refreshIcons(); break;
+      case 'add-reward': addReward(); break;
+      case 'redeem': redeemReward(id); break;
+      case 'delete-reward': arm('r:' + id, () => { state.rewards = state.rewards.filter((r) => r.id !== id); commit(); }); break;
+
       case 'theme': state.theme = state.theme === 'dark' ? 'light' : 'dark'; commit(); break;
       case 'export': exportData(); break;
       case 'copy-export': copyExport(); break;
@@ -947,9 +1629,10 @@
           state = ui.pendingImport;
           ui.pendingImport = null;
           ui.lastLevel = null;
+          ui.cal = {}; ui.editingNote = null; ui.editDraft = null;
           closeModals();
+          say('Dane wczytane z pliku');
           commit();
-          toast('Dane wczytane z pliku');
         }
         break;
       default: break;
@@ -957,16 +1640,44 @@
   });
 
   document.addEventListener('input', (e) => {
-    const id = e.target.dataset && e.target.dataset.note;
-    if (!id || !habitById(id)) return;
-    ensureEntry(id, todayKey()).note = e.target.value.slice(0, 200);
-    ui.openNotes.add(id);
-    save();
+    const t = e.target, ds = t.dataset || {};
+    if (ds.note && habitById(ds.note)) {
+      ensureEntry(ds.note, todayKey()).note = t.value.slice(0, 200);
+      ui.openNotes.add(ds.note);
+      save();
+    } else if (ds.daynote && habitById(ds.id) && ds.day <= todayKey()) {
+      ensureEntry(ds.id, ds.day).note = t.value.slice(0, 200);
+      save();
+    } else if (ds.editNote !== undefined) {
+      if (ui.editDraft) ui.editDraft.text = t.value;
+    } else if (t.id === 'noteSearch') {
+      ui.search = t.value;
+      renderNotesOnly();
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    const t = e.target, ds = t.dataset || {};
+    if (ds.exam) {
+      if (isDateKey(t.value)) state.exams[ds.exam] = t.value; else delete state.exams[ds.exam];
+      commit();
+    } else if (ds.dayval) {
+      const h = habitById(ds.id);
+      if (!h || !ds.day || ds.day > todayKey()) return;
+      const v = parseNum(t.value);
+      if (!Number.isFinite(v) || v < 0) { toast('Wpisz liczbę większą lub równą zero.'); render(); return; }
+      const target = h.type === 'time' ? Math.round(v * 60) : round2(v);
+      trackXp(h, () => setValue(h, ds.day, target), ds.day);
+    }
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModals();
+    if (e.key === 'Escape') {
+      if (ui.editingNote && e.target.dataset && e.target.dataset.editNote !== undefined) { cancelEditNote(); return; }
+      closeModals();
+    }
     if (e.key === 'Enter' && e.target.id === 'fName') { e.preventDefault(); submitHabit(); }
+    if (e.key === 'Enter' && (e.target.id === 'rewardName' || e.target.id === 'rewardCost')) { e.preventDefault(); addReward(); }
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'noteText') { e.preventDefault(); addNote(); }
   });
 
@@ -978,8 +1689,20 @@
 
   document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
 
+  /* Skróty z ikony aplikacji na Androidzie (przytrzymaj ikonę) */
+  function handleLaunchAction() {
+    const action = new URLSearchParams(location.search).get('action');
+    if (!action) return;
+    try { history.replaceState(null, '', location.pathname); } catch (e) { /* ignoruj */ }
+    if (action === 'new-habit') openHabitForm();
+    if (action === 'new-note') {
+      const ta = $('#noteText');
+      ta.scrollIntoView({ block: 'center' });
+      ta.focus();
+    }
+  }
 
-  /* Rejestracja service workera (offline + instalacja jako aplikacja) */
+  /* Service worker: instalacja jako aplikacja i tryb offline */
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', () => {
       try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) { /* PWA jest opcjonalne */ }
@@ -989,6 +1712,8 @@
   /* ---------- Start ---------- */
   $('#fCats').innerHTML = Object.entries(CATEGORIES).map(([k, c]) =>
     `<button type="button" class="chip" style="--c:${c.color}" data-action="pick-cat" data-cat="${k}"><span class="dot"></span>${c.label}</button>`).join('');
+  $('#fDays').innerHTML = DAY_ORDER.map((d) =>
+    `<button type="button" class="chip" data-action="pick-day" data-day="${d}">${WEEKDAYS[d]}</button>`).join('');
   $('#noteCats').innerHTML = Object.entries(NOTE_CATS).map(([k, c]) =>
     `<button type="button" class="chip" style="--c:${c.color}" data-action="pick-note-cat" data-cat="${k}"><span class="dot"></span>${c.label}</button>`).join('');
 
@@ -997,6 +1722,7 @@
   }
 
   render();
+  handleLaunchAction();
   setInterval(tick, 1000);
 })();
 </script>
