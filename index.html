@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1320">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Questlog">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Questlog: nawyki i Second Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+  if (window.tailwind) {
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: 'var(--bg)', panel: 'var(--panel)', panel2: 'var(--panel2)', line: 'var(--line)',
+            ink: 'var(--text)', muted: 'var(--muted)', gold: 'var(--gold-text)', danger: 'var(--danger)'
+          },
+          fontFamily: {
+            sans: ["'DM Sans'", 'system-ui', '-apple-system', "'Segoe UI'", 'Roboto', 'sans-serif'],
+            display: ["'Bricolage Grotesque'", "'DM Sans'", 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    };
+  }
+</script>
+<style>
+  :root {
+    --bg: #0e1320; --panel: #161c2b; --panel2: #1d2538; --line: #2a344b;
+    --text: #e9edf6; --muted: #93a0bb;
+    --gold: #f2c14e; --gold-text: #f2c14e; --on-gold: #1a1300; --danger: #ff7b7b;
+    color-scheme: dark;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  :root[data-theme="light"] {
+    --bg: #eef1f7; --panel: #ffffff; --panel2: #f2f4fa; --line: #d8deec;
+    --text: #182036; --muted: #586582;
+    --gold: #e3a91f; --gold-text: #8a5a00; --on-gold: #1a1300; --danger: #c62f3d;
+    color-scheme: light;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  .font-display { font-family: 'Bricolage Grotesque', 'DM Sans', system-ui, sans-serif; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  i[data-lucide], .lucide { width: 18px; height: 18px; flex-shrink: 0; }
+  i[data-lucide] { display: inline-block; }
+  .lucide.sm { width: 15px; height: 15px; }
+  .lucide.big { width: 38px; height: 38px; color: var(--muted); }
+
+  /* Layout */
+  .shell { display: flex; flex-direction: column; min-height: 100%; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid var(--line); }
+  .cols { display: block; }
+  .col { padding: 20px 16px 32px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  @media (min-width: 1024px) {
+    .shell { height: 100%; }
+    .cols { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+    .col { overflow-y: auto; padding: 24px 28px 48px; }
+    .col + .col { border-left: 1px solid var(--line); }
+  }
+  @media (max-width: 479px) { .lbl { display: none; } .topbar { padding: 10px 14px; } }
+
+  /* Buttons and inputs */
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s; }
+  .btn:hover { background: var(--panel2); border-color: color-mix(in srgb, var(--muted) 45%, var(--line)); }
+  .btn-primary { background: var(--gold); color: var(--on-gold); border-color: transparent; font-weight: 700; }
+  .btn-primary:hover { background: color-mix(in srgb, var(--gold) 86%, white); border-color: transparent; }
+  .btn-danger { background: var(--danger); color: #fff; border-color: transparent; font-weight: 700; }
+  .btn-danger:hover { background: color-mix(in srgb, var(--danger) 88%, black); border-color: transparent; }
+  .btn-icon { width: 38px; padding: 0; justify-content: center; }
+  .icon-btn { width: 32px; height: 32px; border-radius: 8px; display: inline-grid; place-items: center; color: var(--muted); background: transparent; border: 0; cursor: pointer; }
+  .icon-btn:hover { background: var(--panel2); color: var(--text); }
+  .icon-btn.armed { width: auto; padding: 0 10px; font-size: 13px; font-weight: 700; color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+  .field { width: 100%; height: 42px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); padding: 0 12px; font-size: 16px; }
+  .field::placeholder, .note-input::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
+  textarea.field { height: auto; min-height: 92px; padding: 10px 12px; resize: vertical; line-height: 1.5; }
+  .label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: var(--muted); }
+  .brand-mark { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--gold); color: var(--on-gold); }
+
+  .chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; }
+  .chip:hover { color: var(--text); }
+  .chip[aria-pressed="true"] { color: var(--text); background: var(--panel2); border-color: color-mix(in srgb, var(--muted) 50%, var(--line)); }
+  .chip .cnt { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px 22px; padding: 20px; border-radius: 18px; background: var(--panel); border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line)); }
+  .lvl { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 68px; line-height: .85; font-weight: 800; color: var(--gold-text); font-variant-numeric: tabular-nums; }
+  .xpbar { position: relative; height: 16px; border-radius: 5px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden; }
+  .xpbar > i { display: block; height: 100%; background: var(--gold); transition: width .5s ease; }
+  .xpbar::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(90deg, transparent 0, transparent calc(10% - 2px), color-mix(in srgb, var(--panel) 75%, transparent) calc(10% - 2px), color-mix(in srgb, var(--panel) 75%, transparent) 10%); }
+  .stat { padding: 10px 12px; border-radius: 12px; background: var(--panel2); }
+  .stat b { display: block; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat span { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); line-height: 1.3; }
+
+  /* Habit cards */
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+  .habit { padding: 16px 16px 14px 20px; box-shadow: inset 4px 0 0 var(--c); }
+  .habit[data-done="1"] { border-color: color-mix(in srgb, var(--c) 55%, var(--line)); }
+  .streak { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 999px; background: var(--panel2); color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .streak.hot { color: var(--gold-text); background: color-mix(in srgb, var(--gold) 15%, var(--panel2)); }
+  .check-btn { display: flex; align-items: center; gap: 12px; width: 100%; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 15px; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s; }
+  .check-btn:hover { border-color: var(--c); }
+  .check-box { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--muted); display: grid; place-items: center; color: transparent; }
+  .check-btn.is-done { border-color: color-mix(in srgb, var(--c) 60%, var(--line)); background: color-mix(in srgb, var(--c) 14%, var(--panel2)); }
+  .check-btn.is-done .check-box { background: var(--c); border-color: var(--c); color: #0b0f1a; }
+  .round-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+  .round-btn:hover { border-color: var(--c); }
+  .num { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .unit { font-size: 14px; color: var(--muted); }
+  .bar { height: 6px; margin-top: 12px; border-radius: 3px; background: var(--panel2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 3px; background: var(--c); transition: width .3s; }
+  .timer-btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--c); background: var(--c); color: #0b0f1a; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .timer-btn.is-running { background: transparent; color: var(--text); }
+  .pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .25; } }
+  .mini-btn { height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; }
+  .mini-btn:hover { color: var(--text); border-color: var(--muted); }
+  .week { display: flex; gap: 6px; }
+  .wd { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+  .sq { display: block; width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--line); }
+  .sq.on { background: var(--c); border-color: var(--c); }
+  .wd.is-today { color: var(--text); font-weight: 700; }
+  .wd.is-today .sq:not(.on) { border-color: var(--muted); }
+  .note-input { width: 100%; height: 38px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 14px; }
+  .note-add { display: inline-flex; align-items: center; gap: 6px; padding: 2px 0; background: none; border: 0; color: var(--muted); font-size: 13px; cursor: pointer; }
+  .note-add:hover { color: var(--text); }
+
+  /* Notes */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .tile { display: flex; flex-direction: column; gap: 10px; padding: 14px 14px 12px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); }
+  .tile p { font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 36px 20px; text-align: center; border: 1px dashed var(--line); border-radius: 16px; }
+
+  /* Modals and toast */
+  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(5, 8, 15, .68); }
+  .sheet { width: 100%; max-width: 480px; max-height: 92%; overflow-y: auto; padding: 22px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
+  .opt { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; }
+  .opt small { color: var(--muted); font-size: 12px; font-weight: 400; line-height: 1.25; }
+  .opt[aria-pressed="true"] { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--panel2)); }
+  .opt:disabled { opacity: .45; cursor: not-allowed; }
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 60; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px; background: var(--text); color: var(--bg); font-size: 14px; font-weight: 500; opacity: 0; pointer-events: none; transform: translate(-50%, 16px); transition: opacity .2s, transform .2s; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body class="font-sans">
+<div class="shell">
+  <div id="storageWarn" hidden class="px-4 py-2 text-sm text-center" style="background:var(--danger);color:#fff" role="alert">
+    Ta przeglądarka nie pozwala zapisywać danych lokalnie. Po odświeżeniu wszystko zniknie, więc eksportuj dane po każdej sesji.
+  </div>
+
+  <header class="topbar">
+    <div class="flex items-center gap-3 min-w-0">
+      <span class="brand-mark"><i data-lucide="swords"></i></span>
+      <div class="min-w-0">
+        <div class="font-display text-lg font-bold leading-none">Questlog</div>
+        <div id="today" class="text-xs text-muted mt-1 hidden sm:block"></div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="btn" data-action="import" aria-label="Importuj dane z pliku"><i data-lucide="upload"></i><span class="lbl">Importuj</span></button>
+      <button class="btn" data-action="export" aria-label="Eksportuj dane do pliku tekstowego"><i data-lucide="download"></i><span class="lbl">Eksportuj dane</span></button>
+      <button class="btn btn-icon" id="themeBtn" data-action="theme" aria-label="Przełącz motyw jasny lub ciemny"></button>
+    </div>
+  </header>
+
+  <main class="cols">
+    <!-- LEWA KOLUMNA: Nawyk-RPG -->
+    <section class="col" aria-labelledby="h-habits">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <h2 id="h-habits" class="font-display text-2xl font-bold flex items-center gap-3"><i data-lucide="flame"></i>Nawyk-RPG</h2>
+        <button class="btn btn-primary" data-action="new-habit"><i data-lucide="plus"></i>Nowy nawyk</button>
+      </div>
+      <div id="hero" class="mb-5"></div>
+      <div id="habitFilters" class="flex flex-wrap gap-2 mb-4"></div>
+      <div id="habitList" class="flex flex-col gap-3"></div>
+    </section>
+
+    <!-- PRAWA KOLUMNA: Second Brain -->
+    <section class="col" aria-labelledby="h-notes">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <h2 id="h-notes" class="font-display text-2xl font-bold flex items-center gap-3"><i data-lucide="brain"></i>Second Brain</h2>
+      </div>
+      <div class="card p-4 mb-5">
+        <textarea id="noteText" class="field" maxlength="2000" aria-label="Treść notatki" placeholder="Szybka notatka: wzór, zadanie z matury, pomysł na projekt..."></textarea>
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-3">
+          <div class="flex flex-wrap gap-2" id="noteCats" role="group" aria-label="Kategoria notatki"></div>
+          <button class="btn btn-primary" data-action="add-note"><i data-lucide="plus"></i>Dodaj notatkę</button>
+        </div>
+        <p class="text-xs text-muted mt-2">Skrót: Ctrl + Enter dodaje notatkę.</p>
+      </div>
+      <div id="noteFilters" class="flex flex-wrap gap-2 mb-4"></div>
+      <div id="noteList"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal: nowy / edycja nawyku -->
+<div id="habitModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="habitModalTitle">
+  <div class="sheet">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="habitModalTitle" class="font-display text-xl font-bold">Nowy nawyk</h3>
+      <button class="icon-btn" data-action="close-modal" aria-label="Zamknij"><i data-lucide="x"></i></button>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div>
+        <label class="label" for="fName">Nazwa nawyku</label>
+        <input id="fName" class="field" maxlength="60" autocomplete="off" placeholder="np. Nauka do matury">
+      </div>
+      <div>
+        <span class="label">Typ celu</span>
+        <div class="grid grid-cols-3 gap-2" id="fTypes">
+          <button type="button" class="opt" data-action="pick-type" data-type="bool"><i data-lucide="circle-check"></i>Tak/Nie<small>zwykły checkbox</small></button>
+          <button type="button" class="opt" data-action="pick-type" data-type="count"><i data-lucide="gauge"></i>Ilościowy<small>licznik + / −</small></button>
+          <button type="button" class="opt" data-action="pick-type" data-type="time"><i data-lucide="timer"></i>Czasowy<small>stoper Start/Stop</small></button>
+        </div>
+        <p id="fTypeHint" class="text-xs text-muted mt-2" hidden>Typu celu nie da się zmienić po utworzeniu nawyku. Usuń go i dodaj od nowa, jeśli chcesz inny.</p>
+      </div>
+      <div>
+        <span class="label">Kategoria</span>
+        <div class="flex flex-wrap gap-2" id="fCats"></div>
+      </div>
+      <div id="fCountFields" class="grid grid-cols-3 gap-3" hidden>
+        <div><label class="label" for="fCountTarget">Cel dzienny</label><input id="fCountTarget" class="field" inputmode="decimal" autocomplete="off"></div>
+        <div><label class="label" for="fCountUnit">Jednostka</label><input id="fCountUnit" class="field" maxlength="12" autocomplete="off" placeholder="np. l"></div>
+        <div><label class="label" for="fCountStep">Krok licznika</label><input id="fCountStep" class="field" inputmode="decimal" autocomplete="off"></div>
+      </div>
+      <div id="fTimeFields" hidden>
+        <label class="label" for="fTimeTarget">Cel dzienny (minuty)</label>
+        <input id="fTimeTarget" class="field" inputmode="numeric" autocomplete="off">
+      </div>
+      <p id="fError" class="text-sm" style="color:var(--danger)" role="alert" hidden></p>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <button class="btn" data-action="close-modal">Anuluj</button>
+      <button class="btn btn-primary" id="fSave" data-action="save-habit">Dodaj nawyk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: potwierdzenie importu -->
+<div id="importModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="importTitle">
+  <div class="sheet">
+    <h3 id="importTitle" class="font-display text-xl font-bold mb-2">Zastąpić obecne dane?</h3>
+    <p id="importInfo" class="text-sm text-muted mb-1"></p>
+    <p class="text-sm text-muted">Obecne dane zostaną nadpisane. Jeśli chcesz je zachować, najpierw kliknij „Eksportuj dane”.</p>
+    <div class="flex justify-end gap-2 mt-6">
+      <button class="btn" data-action="close-modal">Anuluj</button>
+      <button class="btn btn-danger" data-action="confirm-import">Zastąp dane</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: eksport awaryjny (gdy pobieranie pliku jest niedostępne) -->
+<div id="exportModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+  <div class="sheet">
+    <div class="flex items-center justify-between mb-2">
+      <h3 id="exportTitle" class="font-display text-xl font-bold">Twoja kopia zapasowa</h3>
+      <button class="icon-btn" data-action="close-modal" aria-label="Zamknij"><i data-lucide="x"></i></button>
+    </div>
+    <p class="text-sm text-muted mb-3">Pobieranie pliku nie zadziałało w tym oknie. Skopiuj poniższy tekst, wklej do Notatnika i zapisz jako plik .txt. Później wczytasz go przyciskiem „Importuj”.</p>
+    <textarea id="exportText" class="field" readonly style="min-height:200px;font-size:12px;font-family:ui-monospace,Menlo,Consolas,monospace" aria-label="Dane do skopiowania"></textarea>
+    <div class="flex justify-end gap-2 mt-4">
+      <button class="btn" data-action="close-modal">Zamknij</button>
+      <button class="btn btn-primary" data-action="copy-export"><i data-lucide="copy"></i>Kopiuj dane</button>
+    </div>
+  </div>
+</div>
+
+<input id="importFile" type="file" accept=".txt,.json,text/plain,application/json" hidden>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ---------- Stałe ---------- */
+  const STORAGE_KEY = 'questlog.v1';
+  const CATEGORIES = {
+    school: { label: 'Szkoła',  color: '#6ea8fe' },
+    sport:  { label: 'Sport',   color: '#ff7a59' },
+    growth: { label: 'Rozwój',  color: '#b794f6' },
+    health: { label: 'Zdrowie', color: '#4fd1a5' }
+  };
+  const NOTE_CATS = {
+    school:   { label: 'Szkoła/Matura',        color: '#6ea8fe' },
+    projects: { label: 'Projekty/Side Questy', color: '#f472b6' }
+  };
+  const TYPES = {
+    bool:  { label: 'Tak/Nie',   xp: 10 },
+    count: { label: 'Ilościowy', xp: 15 },
+    time:  { label: 'Czasowy',   xp: 20 }
+  };
+  const WEEKDAYS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So'];
+  const TITLES = [[1, 'Nowicjusz'], [3, 'Adept'], [5, 'Łowca nawyków'], [8, 'Strateg'], [12, 'Mistrz dyscypliny'], [18, 'Legenda']];
+
+  /* ---------- Narzędzia ---------- */
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pad = (n) => String(n).padStart(2, '0');
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const fmtNum = (n) => round2(n).toLocaleString('pl-PL', { maximumFractionDigits: 2 });
+  const plDays = (n) => (n === 1 ? 'dzień' : 'dni');
+  const clampNum = (v, min, max, fallback) => { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback; };
+  const parseNum = (v) => Number(String(v).trim().replace(',', '.'));
+  const safeId = (id) => typeof id === 'string' && /^[\w-]{1,40}$/.test(id) && id !== '__proto__';
+
+  const dateKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const todayKey = () => dateKey(new Date());
+  const startOfDay = (ms) => { const d = new Date(ms); return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); };
+  const shiftKey = (key, delta) => { const [y, m, d] = key.split('-').map(Number); return dateKey(new Date(y, m - 1, d + delta)); };
+  const fmtClock = (sec) => {
+    const s = Math.max(0, Math.floor(sec));
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+    return h ? `${h}:${pad(m)}:${pad(ss)}` : `${pad(m)}:${pad(ss)}`;
+  };
+
+  /* ---------- Stan i zapis (LocalStorage) ---------- */
+  const defaultState = () => ({ version: 1, habits: [], logs: {}, notes: [], timers: {}, bankedXp: 0, theme: 'dark' });
+
+  function sanitizeState(raw) {
+    if (!raw || typeof raw !== 'object' || (!Array.isArray(raw.habits) && !Array.isArray(raw.notes))) {
+      throw new Error('invalid-format');
+    }
+    const s = defaultState();
+    const seen = new Set();
+    for (const h of Array.isArray(raw.habits) ? raw.habits : []) {
+      if (!h || !safeId(h.id) || seen.has(h.id) || typeof h.name !== 'string' || !h.name.trim()) continue;
+      seen.add(h.id);
+      const type = has(TYPES, h.type) ? h.type : 'bool';
+      s.habits.push({
+        id: h.id,
+        name: h.name.trim().slice(0, 60),
+        type,
+        category: has(CATEGORIES, h.category) ? h.category : 'growth',
+        target: type === 'bool' ? 1 : clampNum(h.target, 0.01, 100000, 1),
+        unit: type === 'count' ? String(h.unit == null ? '' : h.unit).slice(0, 12) : '',
+        step: type === 'count' ? clampNum(h.step, 0.01, 10000, 1) : 1,
+        createdAt: Number(h.createdAt) || Date.now()
+      });
+    }
+    if (raw.logs && typeof raw.logs === 'object') {
+      for (const id of Object.keys(raw.logs)) {
+        if (!seen.has(id) || !raw.logs[id] || typeof raw.logs[id] !== 'object') continue;
+        const days = {};
+        for (const day of Object.keys(raw.logs[id])) {
+          const e = raw.logs[id][day];
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !e || typeof e !== 'object') continue;
+          days[day] = { value: Math.max(0, Number(e.value) || 0), note: String(e.note == null ? '' : e.note).slice(0, 200) };
+        }
+        s.logs[id] = days;
+      }
+    }
+    for (const n of Array.isArray(raw.notes) ? raw.notes : []) {
+      if (!n || typeof n.text !== 'string' || !n.text.trim()) continue;
+      s.notes.push({
+        id: safeId(n.id) ? n.id : uid(),
+        text: n.text.slice(0, 2000),
+        category: has(NOTE_CATS, n.category) ? n.category : 'school',
+        createdAt: Number(n.createdAt) || Date.now()
+      });
+    }
+    if (raw.timers && typeof raw.timers === 'object') {
+      for (const id of Object.keys(raw.timers)) {
+        const t = Number(raw.timers[id]);
+        if (seen.has(id) && Number.isFinite(t) && t > 0 && t <= Date.now()) s.timers[id] = t;
+      }
+    }
+    s.bankedXp = Math.max(0, Math.floor(Number(raw.bankedXp) || 0));
+    s.theme = raw.theme === 'light' ? 'light' : 'dark';
+    return s;
+  }
+
+  let storageOk = true;
+  try { localStorage.setItem('__questlog_test', '1'); localStorage.removeItem('__questlog_test'); } catch (e) { storageOk = false; }
+
+  function loadState() {
+    if (!storageOk) return defaultState();
+    let raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return defaultState(); }
+    if (!raw) return defaultState();
+    try {
+      return sanitizeState(JSON.parse(raw));
+    } catch (e) {
+      try { localStorage.setItem(STORAGE_KEY + '.corrupt', raw); } catch (_) { /* brak miejsca */ }
+      return defaultState();
+    }
+  }
+
+  function save() {
+    if (!storageOk) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      storageOk = false;
+      $('#storageWarn').hidden = false;
+    }
+  }
+
+  let state = loadState();
+  const ui = {
+    habitFilter: 'all', noteFilter: 'all', noteCat: 'school',
+    openNotes: new Set(), armed: null, focusNote: null,
+    form: { editingId: null, type: 'bool', category: 'school' },
+    pendingImport: null, lastLevel: null
+  };
+  let renderedDay = todayKey();
+  let armTimer = null, toastTimer = null;
+  let downloadsApi = null;
+  const hasClaudeHost = !!(window.claude && typeof window.claude.use === 'function');
+
+  /* ---------- Logika nawyków ---------- */
+  const habitById = (id) => state.habits.find((h) => h.id === id);
+  const goalOf = (h) => (h.type === 'time' ? h.target * 60 : h.type === 'count' ? h.target : 1);
+
+  function valueOf(h, key) {
+    let v = (state.logs[h.id] && state.logs[h.id][key] && state.logs[h.id][key].value) || 0;
+    if (h.type === 'time' && state.timers[h.id] && key === todayKey()) {
+      const from = Math.max(state.timers[h.id], startOfDay(Date.now()));
+      v += Math.max(0, (Date.now() - from) / 1000);
+    }
+    return v;
+  }
+  const isDone = (h, key) => valueOf(h, key) >= goalOf(h) - 1e-9;
+
+  function ensureEntry(id, key) {
+    if (!state.logs[id]) state.logs[id] = {};
+    if (!state.logs[id][key]) state.logs[id][key] = { value: 0, note: '' };
+    return state.logs[id][key];
+  }
+  function addSeconds(id, key, sec) {
+    const e = ensureEntry(id, key);
+    e.value = Math.max(0, Math.round(e.value + sec));
+  }
+  function commitElapsed(id, startMs, endMs) {
+    let cur = startMs;
+    while (cur < endMs) {
+      const d = new Date(cur);
+      const nextMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime();
+      const chunkEnd = Math.min(endMs, nextMidnight);
+      addSeconds(id, dateKey(d), (chunkEnd - cur) / 1000);
+      cur = chunkEnd;
+    }
+  }
+
+  function streakOf(h) {
+    const t = todayKey();
+    let key = isDone(h, t) ? t : shiftKey(t, -1);
+    let n = 0;
+    while (isDone(h, key)) { n++; key = shiftKey(key, -1); }
+    return n;
+  }
+  function bestStreakOf(h) {
+    const days = Object.keys(state.logs[h.id] || {}).filter((k) => isDone(h, k)).sort();
+    let best = 0, run = 0, prev = null;
+    for (const k of days) {
+      run = prev && shiftKey(prev, 1) === k ? run + 1 : 1;
+      best = Math.max(best, run);
+      prev = k;
+    }
+    return best;
+  }
+
+  /* ---------- XP i poziomy (liczone z historii, więc zawsze spójne) ---------- */
+  const xpOfHabit = (h) => Object.keys(state.logs[h.id] || {}).filter((k) => isDone(h, k)).length * TYPES[h.type].xp;
+  const totalXp = () => state.bankedXp + state.habits.reduce((sum, h) => sum + xpOfHabit(h), 0);
+  const xpForLevel = (l) => 60 + l * 20;
+  function levelInfo(xp) {
+    let level = 1, need = xpForLevel(1), rest = xp;
+    while (rest >= need) { rest -= need; level++; need = xpForLevel(level); }
+    return { level, into: rest, need };
+  }
+  const titleFor = (level) => TITLES.filter(([min]) => level >= min).pop()[1];
+
+  /* ---------- Powiadomienia i potwierdzenia ---------- */
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  }
+  function arm(key, run) {
+    clearTimeout(armTimer);
+    if (ui.armed === key) { ui.armed = null; run(); return; }
+    ui.armed = key;
+    armTimer = setTimeout(() => { ui.armed = null; render(); }, 3000);
+    render();
+  }
+  const commit = () => { save(); render(); };
+  function trackXp(h, change) {
+    const before = isDone(h, todayKey());
+    change();
+    if (!before && isDone(h, todayKey())) toast(`+${TYPES[h.type].xp} XP: ${h.name}`);
+    commit();
+  }
+
+  /* ---------- Render ---------- */
+  function renderHero() {
+    const xp = totalXp(), L = levelInfo(xp), key = todayKey();
+    const doneList = state.habits.filter((h) => isDone(h, key));
+    const todayXp = doneList.reduce((s, h) => s + TYPES[h.type].xp, 0);
+    const bestNow = state.habits.reduce((m, h) => Math.max(m, streakOf(h)), 0);
+    if (ui.lastLevel !== null && L.level > ui.lastLevel) toast(`Awans! Poziom ${L.level}: ${titleFor(L.level)}`);
+    ui.lastLevel = L.level;
+    $('#hero').innerHTML = `
+      <div class="hero">
+        <div class="text-center">
+          <div class="lvl">${L.level}</div>
+          <div class="text-xs text-muted mt-1">poziom</div>
+        </div>
+        <div class="min-w-0 self-center">
+          <div class="flex items-baseline justify-between gap-3 flex-wrap">
+            <span class="font-display text-xl font-bold">${esc(titleFor(L.level))}</span>
+            <span class="text-sm text-muted tabular-nums">${L.into} / ${L.need} XP</span>
+          </div>
+          <div class="xpbar mt-2" role="progressbar" aria-label="Postęp do następnego poziomu" aria-valuemin="0" aria-valuemax="${L.need}" aria-valuenow="${L.into}"><i style="width:${(L.into / L.need) * 100}%"></i></div>
+          <div class="text-xs text-muted mt-2">Do poziomu ${L.level + 1} brakuje ${L.need - L.into} XP. Razem zebrano ${xp} XP.</div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 col-span-2" style="grid-column: 1 / -1">
+          <div class="stat"><b>${doneList.length}/${state.habits.length}</b><span>nawyków zrobionych dziś</span></div>
+          <div class="stat"><b>+${todayXp}</b><span>XP zdobyte dziś</span></div>
+          <div class="stat"><b>${bestNow} ${plDays(bestNow)}</b><span>najdłuższa aktywna seria</span></div>
+        </div>
+      </div>`;
+  }
+
+  function renderHabitFilters() {
+    const host = $('#habitFilters');
+    if (!state.habits.length) { host.innerHTML = ''; return; }
+    const chips = [`<button class="chip" data-action="filter-habit" data-value="all" aria-pressed="${ui.habitFilter === 'all'}">Wszystkie <span class="cnt">${state.habits.length}</span></button>`];
+    for (const [k, c] of Object.entries(CATEGORIES)) {
+      const n = state.habits.filter((h) => h.category === k).length;
+      if (!n) continue;
+      chips.push(`<button class="chip" style="--c:${c.color}" data-action="filter-habit" data-value="${k}" aria-pressed="${ui.habitFilter === k}"><span class="dot"></span>${c.label} <span class="cnt">${n}</span></button>`);
+    }
+    host.innerHTML = chips.join('');
+  }
+
+  function habitCard(h) {
+    const cat = CATEGORIES[h.category], key = todayKey();
+    const goal = goalOf(h), val = valueOf(h, key), done = isDone(h, key);
+    const pct = goal > 0 ? Math.min(100, (val / goal) * 100) : 0;
+    const streak = streakOf(h), best = bestStreakOf(h);
+    const note = (state.logs[h.id] && state.logs[h.id][key] && state.logs[h.id][key].note) || '';
+    const noteOpen = !!note || ui.openNotes.has(h.id);
+    const armed = ui.armed === 'h:' + h.id;
+    const unit = h.unit ? ' ' + esc(h.unit) : '';
+    const running = !!state.timers[h.id];
+    const goalText = h.type === 'bool' ? 'Tak/Nie' : h.type === 'count' ? `cel: ${fmtNum(h.target)}${unit}` : `cel: ${fmtNum(h.target)} min`;
+
+    let controls = '';
+    if (h.type === 'bool') {
+      controls = `
+        <button class="check-btn ${done ? 'is-done' : ''}" data-action="toggle" data-id="${h.id}" aria-pressed="${done}">
+          <span class="check-box"><i data-lucide="check" class="sm"></i></span>
+          <span>${done ? 'Zrobione' : 'Oznacz jako zrobione'}</span>
+        </button>`;
+    } else if (h.type === 'count') {
+      controls = `
+        <div class="flex items-center gap-3">
+          <button class="round-btn" data-action="dec" data-id="${h.id}" aria-label="Zmniejsz o ${fmtNum(h.step)}${unit}"><i data-lucide="minus"></i></button>
+          <div class="min-w-[110px] text-center"><span class="num">${fmtNum(val)}</span><span class="unit"> / ${fmtNum(h.target)}${unit}</span></div>
+          <button class="round-btn" data-action="inc" data-id="${h.id}" aria-label="Zwiększ o ${fmtNum(h.step)}${unit}"><i data-lucide="plus"></i></button>
+          ${done ? '<i data-lucide="check" style="color:var(--c)" aria-label="Cel osiągnięty"></i>' : ''}
+        </div>
+        <div class="bar"><i data-bar style="width:${pct}%"></i></div>`;
+    } else {
+      controls = `
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="timer-btn ${running ? 'is-running' : ''}" data-action="timer" data-id="${h.id}" aria-label="${running ? 'Zatrzymaj stoper' : 'Uruchom stoper'}">
+            ${running ? '<span class="pulse"></span><i data-lucide="square" class="sm"></i>Stop' : '<i data-lucide="play" class="sm"></i>Start'}
+          </button>
+          <div><span class="num" data-clock>${fmtClock(val)}</span><span class="unit"> / ${fmtNum(h.target)} min</span></div>
+          ${done ? '<i data-lucide="check" style="color:var(--c)" aria-label="Cel osiągnięty"></i>' : ''}
+          <div class="ml-auto flex gap-1">
+            <button class="mini-btn" data-action="submin" data-id="${h.id}" aria-label="Odejmij 5 minut">−5</button>
+            <button class="mini-btn" data-action="addmin" data-id="${h.id}" aria-label="Dodaj 5 minut">+5 min</button>
+          </div>
+        </div>
+        <div class="bar"><i data-bar style="width:${pct}%"></i></div>`;
+    }
+
+    let week = '';
+    for (let i = 6; i >= 0; i--) {
+      const k = shiftKey(key, -i);
+      const [y, m, d] = k.split('-').map(Number);
+      week += `<div class="wd ${i === 0 ? 'is-today' : ''}" title="${k}"><i class="sq ${isDone(h, k) ? 'on' : ''}"></i><span>${WEEKDAYS[new Date(y, m - 1, d).getDay()]}</span></div>`;
+    }
+
+    const noteRow = noteOpen
+      ? `<input class="note-input" data-note="${h.id}" value="${esc(note)}" maxlength="200" placeholder="Notatka do dzisiejszego wpisu, np. ciężki trening" aria-label="Notatka do dzisiejszego wpisu: ${esc(h.name)}">`
+      : `<button class="note-add" data-action="note-open" data-id="${h.id}"><i data-lucide="message-square-plus" class="sm"></i>Dodaj notatkę do dzisiejszego wpisu</button>`;
+
+    return `
+      <article class="card habit" style="--c:${cat.color}" data-habit="${h.id}" data-done="${done ? 1 : 0}">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <h3 class="font-display text-lg font-bold leading-tight break-words">${esc(h.name)}</h3>
+            <div class="flex items-center gap-2 mt-1 text-sm text-muted"><span class="dot"></span>${cat.label}<span aria-hidden="true">/</span>${goalText}</div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <span class="streak ${streak > 0 ? 'hot' : ''}" title="Aktualna seria dni z rzędu"><i data-lucide="flame" class="sm"></i>${streak} ${plDays(streak)}</span>
+            <button class="icon-btn" data-action="edit-habit" data-id="${h.id}" aria-label="Edytuj nawyk ${esc(h.name)}"><i data-lucide="pencil" class="sm"></i></button>
+            <button class="icon-btn ${armed ? 'armed' : ''}" data-action="delete-habit" data-id="${h.id}" aria-label="Usuń nawyk ${esc(h.name)}">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>
+          </div>
+        </div>
+        <div class="mt-4">${controls}</div>
+        <div class="flex items-end justify-between gap-3 mt-4">
+          <div class="week" aria-label="Ostatnie 7 dni">${week}</div>
+          <span class="text-xs text-muted">rekord: ${best} ${plDays(best)}</span>
+        </div>
+        <div class="mt-3">${noteRow}</div>
+      </article>`;
+  }
+
+  function renderHabits() {
+    const host = $('#habitList');
+    if (!state.habits.length) {
+      host.innerHTML = `
+        <div class="empty">
+          <i data-lucide="swords" class="big"></i>
+          <h3 class="font-display text-lg font-bold">Twoja kampania czeka na pierwszy nawyk</h3>
+          <p class="text-sm text-muted max-w-sm">Każdy ukończony nawyk daje XP i podnosi poziom. Dodaj własny albo wczytaj gotowy zestaw, żeby zobaczyć, jak to działa.</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <button class="btn btn-primary" data-action="new-habit"><i data-lucide="plus"></i>Dodaj nawyk</button>
+            <button class="btn" data-action="sample-habits">Wczytaj przykładowe nawyki</button>
+          </div>
+        </div>`;
+      return;
+    }
+    const list = state.habits.filter((h) => ui.habitFilter === 'all' || h.category === ui.habitFilter);
+    host.innerHTML = list.length ? list.map(habitCard).join('') : '<p class="text-sm text-muted py-6 text-center">Brak nawyków w tej kategorii.</p>';
+  }
+
+  function renderNoteFilters() {
+    const host = $('#noteFilters');
+    if (!state.notes.length) { host.innerHTML = ''; return; }
+    const chips = [`<button class="chip" data-action="filter-note" data-value="all" aria-pressed="${ui.noteFilter === 'all'}">Wszystkie <span class="cnt">${state.notes.length}</span></button>`];
+    for (const [k, c] of Object.entries(NOTE_CATS)) {
+      const n = state.notes.filter((x) => x.category === k).length;
+      chips.push(`<button class="chip" style="--c:${c.color}" data-action="filter-note" data-value="${k}" aria-pressed="${ui.noteFilter === k}"><span class="dot"></span>${c.label} <span class="cnt">${n}</span></button>`);
+    }
+    host.innerHTML = chips.join('');
+  }
+
+  function renderNotes() {
+    const host = $('#noteList');
+    if (!state.notes.length) {
+      host.innerHTML = `
+        <div class="empty">
+          <i data-lucide="notebook-pen" class="big"></i>
+          <h3 class="font-display text-lg font-bold">Tu trafia wszystko, co warto zapamiętać</h3>
+          <p class="text-sm text-muted max-w-xs">Wzory, zadania z matury, pomysły na projekty. Wpisz pierwszą notatkę w polu powyżej.</p>
+        </div>`;
+      return;
+    }
+    const list = state.notes.filter((n) => ui.noteFilter === 'all' || n.category === ui.noteFilter).sort((a, b) => b.createdAt - a.createdAt);
+    if (!list.length) { host.innerHTML = '<p class="text-sm text-muted py-6 text-center">Brak notatek w tej kategorii.</p>'; return; }
+    host.innerHTML = '<div class="tiles">' + list.map((n) => {
+      const c = NOTE_CATS[n.category];
+      const armed = ui.armed === 'n:' + n.id;
+      const when = new Date(n.createdAt).toLocaleString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      return `
+        <article class="tile" style="--c:${c.color}">
+          <div class="flex items-center justify-between gap-2">
+            <span class="flex items-center gap-2 text-xs text-muted"><span class="dot"></span>${c.label}</span>
+            <button class="icon-btn ${armed ? 'armed' : ''}" data-action="delete-note" data-id="${n.id}" aria-label="Usuń notatkę">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>
+          </div>
+          <p>${esc(n.text)}</p>
+          <time class="text-xs text-muted" datetime="${new Date(n.createdAt).toISOString()}">${when}</time>
+        </article>`;
+    }).join('') + '</div>';
+  }
+
+  function renderChrome() {
+    document.documentElement.dataset.theme = state.theme;
+    $('#themeBtn').innerHTML = `<i data-lucide="${state.theme === 'dark' ? 'sun' : 'moon'}"></i>`;
+    $('#today').textContent = new Date().toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' });
+    $('#storageWarn').hidden = storageOk;
+    syncNoteCats();
+  }
+  function syncNoteCats() {
+    document.querySelectorAll('#noteCats [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === ui.noteCat)));
+  }
+
+  function render() {
+    const ae = document.activeElement;
+    const keep = ae && ae.dataset && ae.dataset.note ? { id: ae.dataset.note, s: ae.selectionStart, e: ae.selectionEnd } : null;
+    renderedDay = todayKey();
+    renderChrome();
+    renderHero();
+    renderHabitFilters();
+    renderHabits();
+    renderNoteFilters();
+    renderNotes();
+    if (window.lucide) { try { window.lucide.createIcons(); } catch (e) { /* ikony są opcjonalne */ } }
+    const targetId = ui.focusNote || (keep && keep.id);
+    if (targetId) {
+      const input = document.querySelector(`[data-note="${targetId}"]`);
+      if (input) {
+        input.focus();
+        const start = ui.focusNote ? input.value.length : keep.s;
+        const end = ui.focusNote ? input.value.length : keep.e;
+        try { input.setSelectionRange(start, end); } catch (e) { /* ignoruj */ }
+      }
+      ui.focusNote = null;
+    }
+  }
+
+  /* ---------- Stoper: aktualizacja bez pełnego renderu ---------- */
+  function tick() {
+    if (todayKey() !== renderedDay) { render(); return; }
+    const ids = Object.keys(state.timers);
+    if (!ids.length) return;
+    let flipped = null;
+    for (const id of ids) {
+      const h = habitById(id);
+      if (!h) { delete state.timers[id]; continue; }
+      const card = document.querySelector(`[data-habit="${id}"]`);
+      if (!card) continue;
+      const key = todayKey(), v = valueOf(h, key), goal = goalOf(h);
+      const clock = card.querySelector('[data-clock]');
+      const bar = card.querySelector('[data-bar]');
+      if (clock) clock.textContent = fmtClock(v);
+      if (bar) bar.style.width = Math.min(100, (v / goal) * 100) + '%';
+      if ((card.dataset.done === '1') !== isDone(h, key)) flipped = h;
+    }
+    if (flipped) {
+      if (isDone(flipped, todayKey())) toast(`+${TYPES[flipped.type].xp} XP: ${flipped.name}`);
+      render();
+    }
+  }
+
+  /* ---------- Modale ---------- */
+  const openModal = (id) => { $('#' + id).hidden = false; };
+  const closeModals = () => { document.querySelectorAll('.overlay').forEach((o) => { o.hidden = true; }); ui.pendingImport = null; };
+
+  function showFormError(msg) { const el = $('#fError'); el.textContent = msg; el.hidden = !msg; }
+  function syncForm() {
+    const f = ui.form;
+    document.querySelectorAll('#fTypes [data-type]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.type === f.type));
+      b.disabled = !!f.editingId && b.dataset.type !== f.type;
+    });
+    document.querySelectorAll('#fCats [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === f.category)));
+    $('#fCountFields').hidden = f.type !== 'count';
+    $('#fTimeFields').hidden = f.type !== 'time';
+    $('#fTypeHint').hidden = !f.editingId;
+  }
+  function openHabitForm(id) {
+    const h = id ? habitById(id) : null;
+    ui.form = { editingId: h ? h.id : null, type: h ? h.type : 'bool', category: h ? h.category : 'school' };
+    $('#habitModalTitle').textContent = h ? 'Edytuj nawyk' : 'Nowy nawyk';
+    $('#fSave').textContent = h ? 'Zapisz zmiany' : 'Dodaj nawyk';
+    $('#fName').value = h ? h.name : '';
+    $('#fCountTarget').value = h && h.type === 'count' ? h.target : 2;
+    $('#fCountUnit').value = h && h.type === 'count' ? h.unit : 'l';
+    $('#fCountStep').value = h && h.type === 'count' ? h.step : 0.25;
+    $('#fTimeTarget').value = h && h.type === 'time' ? h.target : 30;
+    showFormError('');
+    syncForm();
+    openModal('habitModal');
+    $('#fName').focus();
+  }
+  function submitHabit() {
+    const name = $('#fName').value.trim();
+    if (!name) { showFormError('Podaj nazwę nawyku.'); $('#fName').focus(); return; }
+    const type = ui.form.type;
+    let target = 1, unit = '', step = 1;
+    if (type === 'count') {
+      target = parseNum($('#fCountTarget').value);
+      step = parseNum($('#fCountStep').value);
+      unit = $('#fCountUnit').value.trim();
+      if (!(target > 0)) { showFormError('Cel dzienny musi być liczbą większą od zera.'); return; }
+      if (!(step > 0)) { showFormError('Krok licznika musi być liczbą większą od zera.'); return; }
+    } else if (type === 'time') {
+      target = parseNum($('#fTimeTarget').value);
+      if (!(target > 0)) { showFormError('Cel w minutach musi być liczbą większą od zera.'); return; }
+    }
+    target = clampNum(target, 0.01, 100000, 1);
+    step = clampNum(step, 0.01, 10000, 1);
+    const editing = ui.form.editingId ? habitById(ui.form.editingId) : null;
+    if (editing) {
+      Object.assign(editing, { name, category: ui.form.category, target, unit, step });
+      toast('Zapisano zmiany');
+    } else {
+      state.habits.push({ id: uid(), name, type, category: ui.form.category, target, unit, step, createdAt: Date.now() });
+      toast('Dodano nowy nawyk');
+    }
+    closeModals();
+    commit();
+  }
+
+  function addSampleHabits() {
+    const samples = [
+      { name: 'Woda', type: 'count', category: 'health', target: 2, unit: 'l', step: 0.25 },
+      { name: 'Nauka do matury', type: 'time', category: 'school', target: 90 },
+      { name: 'Trening', type: 'bool', category: 'sport' },
+      { name: 'Czytanie', type: 'time', category: 'growth', target: 20 }
+    ];
+    for (const s of samples) {
+      state.habits.push({ id: uid(), name: s.name, type: s.type, category: s.category, target: s.target || 1, unit: s.unit || '', step: s.step || 1, createdAt: Date.now() });
+    }
+    commit();
+  }
+
+  function deleteHabit(id) {
+    const h = habitById(id);
+    if (!h) return;
+    state.bankedXp += xpOfHabit(h);
+    state.habits = state.habits.filter((x) => x.id !== id);
+    delete state.logs[id];
+    delete state.timers[id];
+    ui.openNotes.delete(id);
+    commit();
+  }
+
+  /* ---------- Notatki Second Brain ---------- */
+  function addNote() {
+    const area = $('#noteText');
+    const text = area.value.trim();
+    if (!text) { toast('Wpisz treść notatki.'); area.focus(); return; }
+    state.notes.unshift({ id: uid(), text: text.slice(0, 2000), category: ui.noteCat, createdAt: Date.now() });
+    area.value = '';
+    commit();
+    toast('Notatka dodana');
+  }
+
+  /* ---------- Eksport / import ---------- */
+  const buildExport = () => JSON.stringify({ app: 'questlog', exportedAt: new Date().toISOString(), ...state }, null, 2);
+
+  function browserDownload(name, text) {
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+  function openExportFallback(text) {
+    $('#exportText').value = text;
+    openModal('exportModal');
+    if (window.lucide) { try { window.lucide.createIcons(); } catch (e) { /* ikony są opcjonalne */ } }
+  }
+  async function exportData() {
+    const text = buildExport();
+    const name = `questlog-kopia-${todayKey()}.txt`;
+    if (downloadsApi) {
+      try {
+        await downloadsApi.save({ filename: name, data: text });
+        toast('Kopia zapasowa gotowa');
+      } catch (err) {
+        if (err && err.code === 'declined') toast('Zapis anulowany');
+        else openExportFallback(text);
+      }
+      return;
+    }
+    if (!hasClaudeHost) {
+      try { browserDownload(name, text); toast('Kopia zapasowa pobrana'); } catch (e) { openExportFallback(text); }
+      return;
+    }
+    openExportFallback(text);
+  }
+  async function copyExport() {
+    const ta = $('#exportText');
+    try { await navigator.clipboard.writeText(ta.value); toast('Skopiowano do schowka'); return; } catch (e) { /* próbujemy dalej */ }
+    ta.focus(); ta.select();
+    try { if (document.execCommand('copy')) { toast('Skopiowano do schowka'); return; } } catch (e) { /* ignoruj */ }
+    toast('Tekst jest zaznaczony, skopiuj go skrótem Ctrl + C');
+  }
+  async function handleImportFile(file) {
+    try {
+      if (file.size > 5 * 1024 * 1024) throw new Error('too-big');
+      ui.pendingImport = sanitizeState(JSON.parse(await file.text()));
+      const p = ui.pendingImport;
+      $('#importInfo').textContent = `Zawartość pliku, nawyki: ${p.habits.length}, notatki: ${p.notes.length}.`;
+      openModal('importModal');
+    } catch (e) {
+      ui.pendingImport = null;
+      toast('To nie wygląda na kopię z Questlog. Wybierz plik zapisany przyciskiem „Eksportuj dane”.');
+    }
+  }
+
+  /* ---------- Zdarzenia ---------- */
+  document.addEventListener('click', (e) => {
+    if (e.target.classList && e.target.classList.contains('overlay')) { closeModals(); return; }
+    const el = e.target.closest('[data-action]');
+    if (!el) return;
+    const { action, id, value } = el.dataset;
+    const h = id ? habitById(id) : null;
+    const key = todayKey();
+
+    switch (action) {
+      case 'new-habit': openHabitForm(); break;
+      case 'edit-habit': openHabitForm(id); break;
+      case 'save-habit': submitHabit(); break;
+      case 'close-modal': closeModals(); break;
+      case 'pick-type': if (!el.disabled) { ui.form.type = el.dataset.type; showFormError(''); syncForm(); } break;
+      case 'pick-cat': ui.form.category = el.dataset.cat; syncForm(); break;
+      case 'sample-habits': addSampleHabits(); break;
+      case 'delete-habit': arm('h:' + id, () => deleteHabit(id)); break;
+      case 'filter-habit': ui.habitFilter = value; render(); break;
+      case 'toggle': if (h) trackXp(h, () => { ensureEntry(id, key).value = isDone(h, key) ? 0 : 1; }); break;
+      case 'inc': if (h) trackXp(h, () => { const en = ensureEntry(id, key); en.value = round2(en.value + h.step); }); break;
+      case 'dec': if (h) trackXp(h, () => { const en = ensureEntry(id, key); en.value = round2(Math.max(0, en.value - h.step)); }); break;
+      case 'addmin': if (h) trackXp(h, () => addSeconds(id, key, 300)); break;
+      case 'submin': if (h) trackXp(h, () => addSeconds(id, key, -300)); break;
+      case 'timer':
+        if (h) trackXp(h, () => {
+          if (state.timers[id]) { commitElapsed(id, state.timers[id], Date.now()); delete state.timers[id]; }
+          else { state.timers[id] = Date.now(); }
+        });
+        break;
+      case 'note-open': ui.openNotes.add(id); ui.focusNote = id; render(); break;
+      case 'pick-note-cat': ui.noteCat = el.dataset.cat; syncNoteCats(); break;
+      case 'add-note': addNote(); break;
+      case 'filter-note': ui.noteFilter = value; render(); break;
+      case 'delete-note': arm('n:' + id, () => { state.notes = state.notes.filter((n) => n.id !== id); commit(); }); break;
+      case 'theme': state.theme = state.theme === 'dark' ? 'light' : 'dark'; commit(); break;
+      case 'export': exportData(); break;
+      case 'copy-export': copyExport(); break;
+      case 'import': $('#importFile').click(); break;
+      case 'confirm-import':
+        if (ui.pendingImport) {
+          state = ui.pendingImport;
+          ui.pendingImport = null;
+          ui.lastLevel = null;
+          closeModals();
+          commit();
+          toast('Dane wczytane z pliku');
+        }
+        break;
+      default: break;
+    }
+  });
+
+  document.addEventListener('input', (e) => {
+    const id = e.target.dataset && e.target.dataset.note;
+    if (!id || !habitById(id)) return;
+    ensureEntry(id, todayKey()).note = e.target.value.slice(0, 200);
+    ui.openNotes.add(id);
+    save();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModals();
+    if (e.key === 'Enter' && e.target.id === 'fName') { e.preventDefault(); submitHabit(); }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'noteText') { e.preventDefault(); addNote(); }
+  });
+
+  $('#importFile').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (file) handleImportFile(file);
+  });
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+
+
+  /* Rejestracja service workera (offline + instalacja jako aplikacja) */
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', () => {
+      try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) { /* PWA jest opcjonalne */ }
+    });
+  }
+
+  /* ---------- Start ---------- */
+  $('#fCats').innerHTML = Object.entries(CATEGORIES).map(([k, c]) =>
+    `<button type="button" class="chip" style="--c:${c.color}" data-action="pick-cat" data-cat="${k}"><span class="dot"></span>${c.label}</button>`).join('');
+  $('#noteCats').innerHTML = Object.entries(NOTE_CATS).map(([k, c]) =>
+    `<button type="button" class="chip" style="--c:${c.color}" data-action="pick-note-cat" data-cat="${k}"><span class="dot"></span>${c.label}</button>`).join('');
+
+  if (hasClaudeHost) {
+    Promise.resolve(window.claude.use('downloads')).then((api) => { downloadsApi = api || null; }).catch(() => { downloadsApi = null; });
+  }
+
+  render();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
