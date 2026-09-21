@@ -119,6 +119,7 @@
   /* Matura */
   .exams { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
   .exam { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); }
+  .field, .note-input, .exam-date, .sheet { box-sizing: border-box; }
   .exam { min-width: 0; overflow-wrap: anywhere; }
   .exam.is-past { opacity: .6; }
   .exam-days b { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 30px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -201,6 +202,13 @@
   .ach-ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; background: var(--panel); color: var(--muted); }
   .ach.is-got .ach-ico { background: var(--gold); color: var(--on-gold); }
 
+  /* Synchronizacja */
+  #syncBtn { position: relative; }
+  .sync-dot { position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--panel); background: #4fd1a5; }
+  .sync-dot[data-state="busy"] { background: var(--gold); animation: pulse 1.2s ease-in-out infinite; }
+  .sync-dot[data-state="offline"] { background: var(--muted); }
+  .sync-dot[data-state="error"] { background: var(--danger); }
+
   /* Modals and toast */
   .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(5, 8, 15, .68); }
   .sheet { width: 100%; max-width: 480px; max-height: 92%; overflow-y: auto; padding: 22px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
@@ -240,6 +248,7 @@
       <span id="lastExport" class="text-xs text-muted hidden md:inline mr-1"></span>
       <button class="btn" data-action="import" aria-label="Importuj dane z pliku"><i data-lucide="upload"></i><span class="lbl">Importuj</span></button>
       <button class="btn" data-action="export" aria-label="Eksportuj dane do pliku tekstowego"><i data-lucide="download"></i><span class="lbl">Eksportuj dane</span></button>
+      <button class="btn btn-icon" id="syncBtn" data-action="open-sync" aria-label="Synchronizacja z chmurą"></button>
       <button class="btn btn-icon" id="themeBtn" data-action="theme" aria-label="Przełącz motyw jasny lub ciemny"></button>
     </div>
   </header>
@@ -419,6 +428,58 @@
     <div class="flex justify-end gap-2 mt-4">
       <button class="btn" data-action="close-modal">Zamknij</button>
       <button class="btn btn-primary" data-action="copy-export"><i data-lucide="copy"></i>Kopiuj dane</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: synchronizacja -->
+<div id="syncModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="syncTitle">
+  <div class="sheet">
+    <div class="flex items-center justify-between mb-2">
+      <h3 id="syncTitle" class="font-display text-xl font-bold">Synchronizacja</h3>
+      <button class="icon-btn" data-action="close-modal" aria-label="Zamknij"><i data-lucide="x"></i></button>
+    </div>
+    <p id="syncNotice" class="text-sm mb-3" style="color:var(--danger)" hidden></p>
+    <div id="syncAuth">
+      <p class="text-sm text-muted mb-4">Zaloguj się na to samo konto na telefonie i na komputerze, a Twoje nawyki i notatki będą takie same wszędzie. Dane trafiają do Twojej bazy w chmurze, a Ty widzisz je po zalogowaniu.</p>
+      <div class="flex flex-col gap-3">
+        <div><label class="label" for="syncEmail">E-mail</label><input id="syncEmail" class="field" type="email" autocomplete="email" inputmode="email"></div>
+        <div><label class="label" for="syncPass">Hasło (min. 6 znaków)</label><input id="syncPass" class="field" type="password" autocomplete="current-password"></div>
+        <p id="syncError" class="text-sm" style="color:var(--danger)" role="alert" hidden></p>
+        <div class="flex flex-wrap gap-2">
+          <button class="btn btn-primary" id="syncLogin" data-action="sync-login">Zaloguj</button>
+          <button class="btn" id="syncSignup" data-action="sync-signup">Załóż konto</button>
+        </div>
+      </div>
+      <p class="text-xs text-muted mt-4">Dane nie są szyfrowane end-to-end. Nie wpisuj do notatek haseł ani innych wrażliwych informacji.</p>
+    </div>
+    <div id="syncInfo" hidden>
+      <div class="stat mb-3"><b id="syncUser" style="font-size:16px;word-break:break-all"></b><span id="syncStatus"></span></div>
+      <div id="syncChoose" class="mb-3" hidden><button class="btn btn-primary" data-action="sync-choose">Wybierz, które dane zachować</button></div>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn" data-action="sync-now"><i data-lucide="refresh-cw" class="sm"></i>Synchronizuj teraz</button>
+        <button class="btn" data-action="sync-logout"><i data-lucide="log-out" class="sm"></i>Wyloguj</button>
+      </div>
+      <p class="text-xs text-muted mt-3">Wylogowanie nie usuwa danych z tego urządzenia.</p>
+    </div>
+    <div id="syncRestore" class="mt-4 p-3 rounded-xl" style="background:var(--panel2)" hidden>
+      <span class="label">Kopia awaryjna</span>
+      <p id="syncRestoreText" class="text-sm text-muted mb-2"></p>
+      <button class="btn btn-sm" data-action="sync-restore-backup">Przywróć tę kopię</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: wybór danych przy pierwszej synchronizacji -->
+<div id="syncChoiceModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="syncChoiceTitle">
+  <div class="sheet">
+    <h3 id="syncChoiceTitle" class="font-display text-xl font-bold mb-2">Znaleziono dane w chmurze</h3>
+    <p id="syncChoiceInfo" class="text-sm mb-2"></p>
+    <p class="text-sm text-muted">Wybierz, które dane mają zostać. Drugie zapiszę jako kopię awaryjną na tym urządzeniu, więc nic nie przepadnie.</p>
+    <div class="flex flex-col gap-2 mt-5">
+      <button class="btn btn-primary" data-action="sync-use-cloud">Użyj danych z chmury</button>
+      <button class="btn" data-action="sync-use-local">Wyślij dane z tego urządzenia (zastąpią chmurę)</button>
+      <button class="btn" data-action="sync-cancel-choice">Anuluj i wyloguj</button>
     </div>
   </div>
 </div>
@@ -637,7 +698,8 @@
     }
   }
 
-  function save() {
+  /* persist() tylko zapisuje lokalnie, a save() dodatkowo oznacza zmianę do wysłania do chmury. */
+  function persist() {
     if (!storageOk) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -646,8 +708,38 @@
       $('#storageWarn').hidden = false;
     }
   }
+  function save() { persist(); markDirty(); }
 
   let state = loadState();
+
+  /* ---------- Synchronizacja: konfiguracja i dane logowania (osobno od danych aplikacji) ---------- */
+  const SUPABASE_URL = 'https://kbprgdinfclznvksrqeq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_NAs7cgsxMBkcaTYAS-7LZg_cdQ5Y0tS';   // klucz publiczny, można go umieszczać w kodzie strony
+  const SYNC_KEY = 'questlog.sync';
+  const BACKUP_KEY = 'questlog.backup';
+  const defaultMeta = () => ({ session: null, userId: null, lastRemoteAt: null, dirty: false, dirtyAt: 0, version: 0, lastSyncAt: 0 });
+  function loadMeta() {
+    const d = defaultMeta();
+    if (!storageOk) return d;
+    try {
+      const m = JSON.parse(localStorage.getItem(SYNC_KEY) || 'null');
+      if (!m || typeof m !== 'object') return d;
+      const ss = m.session;
+      if (ss && typeof ss.access_token === 'string' && typeof ss.refresh_token === 'string' && Number.isFinite(Number(ss.expires_at)) &&
+          ss.user && typeof ss.user.id === 'string' && typeof ss.user.email === 'string') {
+        d.session = { access_token: ss.access_token, refresh_token: ss.refresh_token, expires_at: Number(ss.expires_at), user: { id: ss.user.id, email: ss.user.email } };
+      }
+      d.userId = typeof m.userId === 'string' ? m.userId : (d.session ? d.session.user.id : null);
+      d.lastRemoteAt = typeof m.lastRemoteAt === 'string' ? m.lastRemoteAt : null;
+      d.dirty = m.dirty === true;
+      d.dirtyAt = Number(m.dirtyAt) || 0;
+      d.version = Number(m.version) || 0;
+      d.lastSyncAt = Number(m.lastSyncAt) || 0;
+    } catch (e) { /* uszkodzone dane logowania: zaczynamy od nowa */ }
+    return d;
+  }
+  let meta = loadMeta();
+
   const ui = {
     habitFilter: 'all', noteFilter: 'all', noteCat: 'school', noteAsList: false, search: '', showAllEvents: false,
     openNotes: new Set(), cal: {}, armed: null, focusFk: null, msgs: [],
@@ -907,6 +999,7 @@
       ? `Ostatnia kopia zapasowa: ${agoText(ts)}. Wyeksportuj dane, żeby nie stracić postępów.`
       : 'Nie masz jeszcze kopii zapasowej. Wyeksportuj dane, żeby nie stracić postępów.';
     syncNoteControls();
+    renderSyncUi();
   }
   function syncNoteControls() {
     document.querySelectorAll('#noteCats [data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === ui.noteCat)));
@@ -1624,6 +1717,352 @@
     }
   }
 
+  /* ---------- Synchronizacja z chmurą (Supabase) ---------- */
+  const sync = { busy: false, again: false, timer: null, conflicts: 0, pendingChoice: null, status: { state: 'idle', msg: '' } };
+  class SyncError extends Error { constructor(kind, msg) { super(msg); this.kind = kind; } }
+
+  const syncAvailable = () => storageOk && !hasClaudeHost && !!SUPABASE_URL && !!SUPABASE_KEY;
+  function persistMeta() {
+    if (!storageOk) return;
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify(meta)); } catch (e) { /* ignoruj */ }
+  }
+  function markDirty() {
+    if (!meta.session && !meta.userId) return;   // konto jeszcze nigdy nie było połączone
+    meta.dirty = true; meta.dirtyAt = Date.now(); meta.version++;
+    persistMeta();
+    scheduleSync();
+  }
+  function scheduleSync() {
+    if (!meta.session || !syncAvailable()) return;
+    clearTimeout(sync.timer);
+    sync.timer = setTimeout(syncNow, 2500);
+  }
+  const localIsEmpty = () => !state.habits.length && !state.notes.length && !state.rewards.length && !state.events.length &&
+    !Object.keys(state.exams).length && !Object.keys(state.logs).length && state.bankedXp === 0;
+  const readJson = async (res) => { try { return await res.json(); } catch (e) { return null; } };
+  function relTime(ms) {
+    const s = Math.floor((Date.now() - ms) / 1000);
+    if (s < 45) return 'przed chwilą';
+    const m = Math.round(s / 60);
+    if (m < 60) return `${m} min temu`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h} godz. temu`;
+    return `${Math.round(h / 24)} dni temu`;
+  }
+
+  /* Kopia awaryjna: jedno miejsce na dane, które właśnie zostały zastąpione. */
+  function storeBackup(from, data) {
+    if (!storageOk) return;
+    try { localStorage.setItem(BACKUP_KEY, JSON.stringify({ at: Date.now(), from, json: JSON.stringify(data) })); } catch (e) { /* brak miejsca */ }
+  }
+  function loadBackup() {
+    if (!storageOk) return null;
+    try {
+      const b = JSON.parse(localStorage.getItem(BACKUP_KEY) || 'null');
+      return b && typeof b.json === 'string' && Number.isFinite(Number(b.at)) ? b : null;
+    } catch (e) { return null; }
+  }
+
+  async function sbFetch(path, { method = 'GET', body, headers = {}, token = null } = {}) {
+    const h = { apikey: SUPABASE_KEY, ...headers };
+    if (body !== undefined) h['Content-Type'] = 'application/json';
+    if (token) h.Authorization = `Bearer ${token}`;
+    try {
+      return await fetch(SUPABASE_URL + path, { method, headers: h, body: body === undefined ? undefined : JSON.stringify(body) });
+    } catch (e) {
+      throw new SyncError('network', 'Brak połączenia z serwerem.');
+    }
+  }
+  function authMessage(j, status) {
+    const code = String((j && (j.error_code || j.code)) || '');
+    const msg = String((j && (j.msg || j.message || j.error_description || j.error)) || '');
+    if (code === 'invalid_credentials' || /invalid login/i.test(msg)) return 'Nieprawidłowy e-mail lub hasło.';
+    if (code === 'user_already_exists' || /already registered/i.test(msg)) return 'Konto z tym adresem już istnieje. Kliknij „Zaloguj”.';
+    if (code === 'weak_password') return 'Hasło jest za słabe. Użyj co najmniej 6 znaków.';
+    if (code === 'email_not_confirmed') return 'Adres e-mail nie jest potwierdzony. Sprawdź skrzynkę albo wyłącz „Confirm email” w Supabase.';
+    if (code === 'signup_disabled') return 'Zakładanie kont jest wyłączone w tym projekcie.';
+    if (code === 'validation_failed' || /valid email/i.test(msg)) return 'Podaj poprawny adres e-mail.';
+    if (status === 429 || /rate limit/i.test(code + msg)) return 'Za dużo prób. Spróbuj ponownie za chwilę.';
+    if (status >= 500) return 'Serwer jest chwilowo niedostępny. Projekt w Supabase mógł zostać wstrzymany po tygodniu bezczynności.';
+    return msg ? `Nie udało się: ${msg}` : 'Nie udało się zalogować.';
+  }
+  function restError(res, j) {
+    const code = j && j.code ? String(j.code) : '';
+    if (res.status === 401) return new SyncError('auth', 'Sesja wygasła. Zaloguj się ponownie.');
+    if (code === '42501' || res.status === 403) return new SyncError('error', 'Brak uprawnień do tabeli user_data. Uruchom w Supabase cały kod SQL, także linijkę z „grant”.');
+    if (code === 'PGRST205' || code === '42P01' || res.status === 404) return new SyncError('error', 'Nie znaleziono tabeli user_data. Uruchom w Supabase kod SQL z instrukcji.');
+    if (res.status >= 500) return new SyncError('error', 'Serwer Supabase jest chwilowo niedostępny. Projekt mógł zostać wstrzymany po tygodniu bezczynności.');
+    return new SyncError('error', `Błąd serwera (${res.status}).`);
+  }
+  function normalizeSession(j) {
+    return {
+      access_token: j.access_token,
+      refresh_token: j.refresh_token,
+      expires_at: Number(j.expires_at) || Math.floor(Date.now() / 1000) + (Number(j.expires_in) || 3600),
+      user: { id: j.user.id, email: j.user.email }
+    };
+  }
+  async function refreshSession() {
+    const res = await sbFetch('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: { refresh_token: meta.session.refresh_token } });
+    const j = await readJson(res);
+    if (!res.ok || !j || !j.access_token || !j.user) {
+      if (res.status >= 500) throw new SyncError('error', 'Serwer jest chwilowo niedostępny.');
+      signOutLocal();
+      throw new SyncError('auth', 'Sesja wygasła. Zaloguj się ponownie.');
+    }
+    meta.session = normalizeSession(j);
+    persistMeta();
+  }
+  async function authedFetch(path, opts = {}) {
+    if (!meta.session) throw new SyncError('auth', 'Nie jesteś zalogowany.');
+    if (meta.session.expires_at - 60 < Date.now() / 1000) await refreshSession();
+    let res = await sbFetch(path, { ...opts, token: meta.session.access_token });
+    if (res.status === 401) {
+      await refreshSession();
+      res = await sbFetch(path, { ...opts, token: meta.session.access_token });
+    }
+    return res;
+  }
+
+  async function fetchRemote() {
+    const res = await authedFetch('/rest/v1/user_data?select=data,updated_at&limit=1');
+    const j = await readJson(res);
+    if (!res.ok) throw restError(res, j);
+    return Array.isArray(j) && j[0] ? j[0] : null;
+  }
+  /* Wysyła dane. expectedAt = wersja z chmury, którą znamy: jeśli ktoś ją w międzyczasie zmienił, zapis się nie uda (zwraca false). */
+  async function pushState(expectedAt, force = false) {
+    const version = meta.version, uid = meta.session.user.id;
+    const stamp = new Date().toISOString();
+    const payload = JSON.parse(JSON.stringify(state));
+    let res, j;
+    if (expectedAt) {
+      const guard = force ? '' : `&updated_at=eq.${encodeURIComponent(expectedAt)}`;
+      res = await authedFetch(`/rest/v1/user_data?user_id=eq.${encodeURIComponent(uid)}${guard}&select=updated_at`,
+        { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: { data: payload, updated_at: stamp } });
+      j = await readJson(res);
+      if (!res.ok) throw restError(res, j);
+      if (!Array.isArray(j) || !j.length) return false;
+    } else {
+      res = await authedFetch('/rest/v1/user_data?select=updated_at',
+        { method: 'POST', headers: { Prefer: 'return=representation' }, body: { user_id: uid, data: payload, updated_at: stamp } });
+      j = await readJson(res);
+      if (res.status === 409) return false;
+      if (!res.ok) throw restError(res, j);
+    }
+    meta.lastRemoteAt = j[0].updated_at;
+    meta.lastSyncAt = Date.now();
+    if (meta.version === version) meta.dirty = false;   // jeśli w trakcie wysyłania coś się zmieniło, zostaje do wysłania
+    persistMeta();
+    return true;
+  }
+  function applyRemote(remote, backupLocal) {
+    let clean;
+    try { clean = sanitizeState(remote.data); } catch (e) { throw new SyncError('error', 'Dane w chmurze mają nieprawidłowy format.'); }
+    if (backupLocal) storeBackup('local', state);
+    clean.theme = state.theme;
+    state = clean;
+    persist();
+    meta.lastRemoteAt = remote.updated_at; meta.dirty = false; meta.lastSyncAt = Date.now();
+    persistMeta();
+    ui.lastLevel = null; ui.editingNote = null; ui.editDraft = null;
+    render();
+  }
+  function describeData(d) {
+    const h = d && Array.isArray(d.habits) ? d.habits.length : 0, n = d && Array.isArray(d.notes) ? d.notes.length : 0;
+    return `nawyki: ${h}, notatki: ${n}`;
+  }
+  async function reconcile(remote) {
+    if (!remote) {
+      if (!localIsEmpty() || meta.dirty) return pushState(null);
+      meta.lastSyncAt = Date.now(); persistMeta();
+      return true;
+    }
+    if (meta.lastRemoteAt === remote.updated_at) {
+      if (meta.dirty) return pushState(remote.updated_at, sync.conflicts >= 2);
+      meta.lastSyncAt = Date.now(); persistMeta();
+      return true;
+    }
+    if (!meta.lastRemoteAt) {   // to urządzenie jeszcze nie synchronizowało się z tym kontem
+      if (localIsEmpty()) { applyRemote(remote, false); return true; }
+      sync.pendingChoice = remote;
+      openChoice(remote);
+      return true;
+    }
+    if (!meta.dirty) {   // w chmurze jest nowsza wersja, a lokalnie nic się nie zmieniło
+      say('Wczytano nowsze dane z chmury');
+      applyRemote(remote, false);
+      return true;
+    }
+    // zmiany po obu stronach: wygrywa nowszy zapis, a przegrany trafia do kopii awaryjnej
+    if (meta.dirtyAt > Date.parse(remote.updated_at)) {
+      storeBackup('cloud', remote.data);
+      say('Zmiany z tego urządzenia były nowsze i zastąpiły dane w chmurze. Kopia chmury jest w oknie synchronizacji.');
+      return pushState(remote.updated_at, sync.conflicts >= 2);
+    }
+    storeBackup('local', state);
+    say('W chmurze były nowsze dane, więc je wczytano. Kopia zmian z tego urządzenia jest w oknie synchronizacji.');
+    applyRemote(remote, false);
+    return true;
+  }
+
+  async function syncNow() {
+    if (!syncAvailable() || !meta.session) return;
+    if (sync.busy) { sync.again = true; return; }
+    if (sync.pendingChoice) return;
+    if (!navigator.onLine) { setSyncStatus('offline'); return; }
+    sync.busy = true;
+    setSyncStatus('busy');
+    try {
+      const remote = await fetchRemote();
+      const ok = await reconcile(remote);
+      if (ok === false) {
+        sync.conflicts++;
+        if (sync.conflicts <= 3) sync.again = true;
+        else throw new SyncError('error', 'Nie udało się zapisać zmian (konflikt). Spróbuj ponownie za chwilę.');
+      } else {
+        sync.conflicts = 0;
+      }
+      setSyncStatus('idle');
+    } catch (e) {
+      sync.conflicts = 0;
+      if (e instanceof SyncError) setSyncStatus(e.kind === 'network' ? 'offline' : 'error', e.message);
+      else setSyncStatus('error', 'Nieoczekiwany błąd synchronizacji.');
+    } finally {
+      sync.busy = false;
+      if (sync.again && meta.session) { sync.again = false; setTimeout(syncNow, 300); }
+    }
+  }
+
+  function setSyncStatus(st, msg = '') { sync.status = { state: st, msg }; renderSyncUi(); }
+  function syncStatusText() {
+    switch (sync.status.state) {
+      case 'busy': return 'Synchronizuję...';
+      case 'offline': return 'Brak internetu. Zmiany wyślą się, gdy wróci połączenie.';
+      case 'error': return sync.status.msg || 'Błąd synchronizacji.';
+      default:
+        if (sync.pendingChoice) return 'Czekam na Twoją decyzję, które dane zachować.';
+        if (meta.dirty) return 'Zmiany czekają na wysłanie.';
+        return meta.lastSyncAt ? `Zsynchronizowano ${relTime(meta.lastSyncAt)}.` : 'Gotowe do synchronizacji.';
+    }
+  }
+  function renderSyncUi() {
+    const on = !!meta.session, ok = syncAvailable();
+    const st = sync.status.state === 'idle' ? 'ok' : sync.status.state;
+    $('#syncBtn').innerHTML = `<i data-lucide="${on ? 'cloud' : 'cloud-off'}"></i>${on ? `<span class="sync-dot" data-state="${st}"></span>` : ''}`;
+    const notice = $('#syncNotice');
+    notice.hidden = ok;
+    notice.textContent = hasClaudeHost
+      ? 'Synchronizacja nie działa w oknie podglądu Artifacts, bo blokuje ono połączenia z zewnętrznymi serwisami. Otwórz stronę z GitHuba albo zainstalowaną aplikację.'
+      : 'Ta przeglądarka nie pozwala zapisywać danych lokalnie, więc synchronizacja jest wyłączona.';
+    $('#syncAuth').hidden = on || !ok;
+    $('#syncInfo').hidden = !on;
+    if (on) {
+      $('#syncUser').textContent = meta.session.user.email;
+      $('#syncStatus').textContent = syncStatusText();
+      $('#syncChoose').hidden = !sync.pendingChoice;
+    }
+    const b = loadBackup();
+    $('#syncRestore').hidden = !b;
+    if (b) {
+      let counts = '';
+      try { counts = ` (${describeData(JSON.parse(b.json))})`; } catch (e) { /* ignoruj */ }
+      $('#syncRestoreText').textContent = `Z ${new Date(b.at).toLocaleString('pl-PL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}: ${b.from === 'local' ? 'dane z tego urządzenia' : 'dane z chmury'}${counts}. Zapisały się tuż przed nadpisaniem.`;
+    }
+    refreshIcons();
+  }
+
+  function setAuthBusy(busy) { ['#syncLogin', '#syncSignup'].forEach((sel) => { $(sel).disabled = busy; }); }
+  async function authSubmit(mode) {
+    const email = $('#syncEmail').value.trim(), password = $('#syncPass').value;
+    const err = $('#syncError');
+    const fail = (m) => { err.textContent = m; err.hidden = false; };
+    err.hidden = true;
+    if (!/^\S+@\S+\.\S+$/.test(email)) { fail('Podaj poprawny adres e-mail.'); return; }
+    if (password.length < 6) { fail('Hasło musi mieć co najmniej 6 znaków.'); return; }
+    setAuthBusy(true);
+    try {
+      const res = await sbFetch(mode === 'signup' ? '/auth/v1/signup' : '/auth/v1/token?grant_type=password', { method: 'POST', body: { email, password } });
+      const j = await readJson(res);
+      if (!res.ok) { fail(authMessage(j, res.status)); return; }
+      if (!j || !j.access_token || !j.user) { fail('Konto utworzone. Potwierdź adres e-mail w wiadomości od Supabase, a potem kliknij „Zaloguj”.'); return; }
+      const session = normalizeSession(j);
+      if (meta.userId !== session.user.id) {
+        // inne konto niż poprzednio: traktujemy to urządzenie jak nowe dla tego konta
+        meta.lastRemoteAt = null; meta.dirty = false; meta.dirtyAt = 0;
+      }
+      meta.userId = session.user.id;
+      meta.session = session;
+      persistMeta();
+      $('#syncPass').value = '';
+      toast(mode === 'signup' ? 'Konto utworzone. Zaczynam synchronizację.' : 'Zalogowano. Zaczynam synchronizację.');
+      renderSyncUi();
+      syncNow();
+    } catch (e) {
+      fail(e instanceof SyncError ? e.message : 'Nie udało się połączyć z serwerem.');
+    } finally {
+      setAuthBusy(false);
+    }
+  }
+  function signOutLocal() {
+    meta.session = null;
+    persistMeta();
+    sync.pendingChoice = null;
+    clearTimeout(sync.timer);
+    $('#syncChoiceModal').hidden = true;
+    sync.status = { state: 'idle', msg: '' };
+    renderSyncUi();
+  }
+  async function signOut() {
+    const token = meta.session && meta.session.access_token;
+    if (token) { try { await sbFetch('/auth/v1/logout', { method: 'POST', token }); } catch (e) { /* wylogowanie lokalne i tak nastąpi */ } }
+    signOutLocal();
+    toast('Wylogowano. Dane zostają na tym urządzeniu.');
+  }
+
+  function openChoice(remote) {
+    const local = `nawyki: ${state.habits.length}, notatki: ${state.notes.length}`;
+    $('#syncChoiceInfo').textContent = `W chmurze (zapisane ${new Date(remote.updated_at).toLocaleString('pl-PL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}): ${describeData(remote.data)}. Na tym urządzeniu: ${local}.`;
+    openModal('syncChoiceModal');
+    setSyncStatus('idle');
+  }
+  function chooseCloud() {
+    const remote = sync.pendingChoice;
+    if (!remote) return;
+    sync.pendingChoice = null;
+    $('#syncChoiceModal').hidden = true;
+    try {
+      say('Wczytano dane z chmury. Poprzednie dane z tego urządzenia są w kopii awaryjnej.');
+      applyRemote(remote, true);
+      setSyncStatus('idle');
+    } catch (e) { setSyncStatus('error', e instanceof SyncError ? e.message : 'Nie udało się wczytać danych.'); }
+  }
+  function chooseLocal() {
+    const remote = sync.pendingChoice;
+    if (!remote) return;
+    storeBackup('cloud', remote.data);
+    meta.lastRemoteAt = remote.updated_at; meta.dirty = true; meta.dirtyAt = Date.now(); meta.version++;
+    persistMeta();
+    sync.pendingChoice = null;
+    $('#syncChoiceModal').hidden = true;
+    toast('Dane z tego urządzenia zastąpią dane w chmurze.');
+    syncNow();
+  }
+  function restoreBackup() {
+    const b = loadBackup();
+    if (!b) return;
+    try {
+      const clean = sanitizeState(JSON.parse(b.json));
+      clean.theme = state.theme;
+      storeBackup('local', state);   // obecne dane też zostają w kopii, więc da się to cofnąć
+      state = clean;
+      ui.lastLevel = null; ui.cal = {}; ui.editingNote = null; ui.editDraft = null;
+      say('Przywrócono kopię awaryjną');
+      commit();
+      renderSyncUi();
+    } catch (e) { toast('Nie udało się przywrócić kopii.'); }
+  }
+
   /* ---------- Zdarzenia ---------- */
   document.addEventListener('click', (e) => {
     if (e.target.classList && e.target.classList.contains('overlay')) { closeModals(); return; }
@@ -1717,6 +2156,17 @@
       case 'redeem': redeemReward(id); break;
       case 'delete-reward': arm('r:' + id, () => { state.rewards = state.rewards.filter((r) => r.id !== id); commit(); }); break;
 
+      case 'open-sync': renderSyncUi(); openModal('syncModal'); if (meta.session) syncNow(); break;
+      case 'sync-login': authSubmit('login'); break;
+      case 'sync-signup': authSubmit('signup'); break;
+      case 'sync-now': syncNow(); break;
+      case 'sync-logout': signOut(); break;
+      case 'sync-choose': if (sync.pendingChoice) openChoice(sync.pendingChoice); break;
+      case 'sync-use-cloud': chooseCloud(); break;
+      case 'sync-use-local': chooseLocal(); break;
+      case 'sync-cancel-choice': signOut(); break;
+      case 'sync-restore-backup': restoreBackup(); break;
+
       case 'theme': state.theme = state.theme === 'dark' ? 'light' : 'dark'; commit(); break;
       case 'export': exportData(); break;
       case 'copy-export': copyExport(); break;
@@ -1780,6 +2230,7 @@
     }
     if (e.key === 'Enter' && e.target.id === 'fName') { e.preventDefault(); submitHabit(); }
     if (e.key === 'Enter' && e.target.id === 'eName') { e.preventDefault(); addEvent(); }
+    if (e.key === 'Enter' && (e.target.id === 'syncEmail' || e.target.id === 'syncPass')) { e.preventDefault(); authSubmit('login'); }
     if (e.key === 'Enter' && (e.target.id === 'rewardName' || e.target.id === 'rewardCost')) { e.preventDefault(); addReward(); }
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'noteText') { e.preventDefault(); addNote(); }
   });
@@ -1790,7 +2241,8 @@
     if (file) handleImportFile(file);
   });
 
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); syncNow(); } });
+  window.addEventListener('online', () => { syncNow(); });
 
   /* Skróty z ikony aplikacji na Androidzie (przytrzymaj ikonę) */
   function handleLaunchAction() {
@@ -1827,6 +2279,8 @@
   render();
   handleLaunchAction();
   setInterval(tick, 1000);
+  if (meta.session) syncNow();
+  setInterval(() => { if (meta.session && !document.hidden) syncNow(); }, 60000);
 })();
 </script>
 </body>

@@ -1,6 +1,6 @@
 /* Service worker MaxHabitTracker: dzięki niemu aplikacja działa offline.
    Przy zmianie plików strony podbij numer wersji poniżej. */
-const CACHE = 'maxhabittracker-v1';
+const CACHE = 'maxhabittracker-v2';
 const LOCAL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {
@@ -15,9 +15,14 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+/* Tylko te zewnętrzne adresy trafiają do pamięci podręcznej (skrypty i czcionki). Zapytania do bazy danych (Supabase) nigdy. */
+const CACHEABLE_HOSTS = ['cdn.tailwindcss.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin && !CACHEABLE_HOSTS.includes(url.hostname)) return;
 
   // Strona główna: najpierw sieć (świeża wersja), a bez internetu kopia z pamięci.
   if (req.mode === 'navigate') {
