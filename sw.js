@@ -1,6 +1,6 @@
-/* Service worker Questlog: dzięki niemu aplikacja działa offline.
+/* Service worker MaxHabitTracker: dzięki niemu aplikacja działa offline.
    Przy zmianie plików strony podbij numer wersji poniżej. */
-const CACHE = 'questlog-v2';
+const CACHE = 'maxhabittracker-v1';
 const LOCAL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {

@@ -9,9 +9,9 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Questlog">
+<meta name="apple-mobile-web-app-title" content="MaxHabitTracker">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Questlog: nawyki i Second Brain</title>
+<title>MaxHabitTracker: nawyki i Second Brain</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -97,7 +97,7 @@
   .field::placeholder, .note-input::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
   textarea.field { height: auto; min-height: 92px; padding: 10px 12px; resize: vertical; line-height: 1.5; }
   .label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: var(--muted); }
-  .brand-mark { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--gold); color: var(--on-gold); }
+  .brand-logo { width: 29px; height: 36px; flex-shrink: 0; object-fit: contain; }
 
   .chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; }
   .chip:hover { color: var(--text); }
@@ -119,6 +119,8 @@
   /* Matura */
   .exams { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
   .exam { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); }
+  .exam { min-width: 0; overflow-wrap: anywhere; }
+  .exam.is-past { opacity: .6; }
   .exam-days b { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 30px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
   .exam-days span { margin-left: 4px; font-size: 13px; color: var(--muted); }
   .exam-date { width: 100%; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 13px; }
@@ -228,9 +230,9 @@
 
   <header class="topbar">
     <div class="flex items-center gap-3 min-w-0">
-      <span class="brand-mark"><i data-lucide="swords"></i></span>
+      <img class="brand-logo" src="data:image/png;base64,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" alt="" width="29" height="36">
       <div class="min-w-0">
-        <div class="font-display text-lg font-bold leading-none">Questlog</div>
+        <div class="font-display text-lg font-bold leading-none">MaxHabitTracker</div>
         <div id="today" class="text-xs text-muted mt-1 hidden sm:block"></div>
       </div>
     </div>
@@ -250,7 +252,14 @@
         <button class="btn btn-primary" data-action="new-habit"><i data-lucide="plus"></i>Nowy nawyk</button>
       </div>
       <div id="hero" class="mb-4"></div>
-      <div id="exams" class="exams mb-5"></div>
+      <div class="mb-5">
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <h3 class="font-display text-lg font-bold flex items-center gap-2"><i data-lucide="calendar-clock"></i>Odliczanie</h3>
+          <button class="btn btn-sm" data-action="new-event"><i data-lucide="plus" class="sm"></i>Wydarzenie</button>
+        </div>
+        <div id="exams" class="exams"></div>
+        <div id="examsMore" class="mt-2"></div>
+      </div>
       <div id="habitFilters" class="flex flex-wrap gap-2 mb-4"></div>
       <div id="habitList" class="flex flex-col gap-3"></div>
     </section>
@@ -324,6 +333,31 @@
     <div class="flex justify-end gap-2 mt-6">
       <button class="btn" data-action="close-modal">Anuluj</button>
       <button class="btn btn-primary" id="fSave" data-action="save-habit">Dodaj nawyk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: nowe wydarzenie w odliczaniu -->
+<div id="eventModal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
+  <div class="sheet">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="eventModalTitle" class="font-display text-xl font-bold">Nowe wydarzenie</h3>
+      <button class="icon-btn" data-action="close-modal" aria-label="Zamknij"><i data-lucide="x"></i></button>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div>
+        <label class="label" for="eName">Nazwa</label>
+        <input id="eName" class="field" maxlength="40" autocomplete="off" placeholder="np. Próbna matura z fizyki">
+      </div>
+      <div>
+        <label class="label" for="eDate">Data</label>
+        <input id="eDate" class="field" type="date">
+      </div>
+      <p id="eError" class="text-sm" style="color:var(--danger)" role="alert" hidden></p>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <button class="btn" data-action="close-modal">Anuluj</button>
+      <button class="btn btn-primary" data-action="save-event">Dodaj wydarzenie</button>
     </div>
   </div>
 </div>
@@ -420,10 +454,16 @@
     time:  { label: 'Czasowy',   xp: 20 }
   };
   const EXAMS = [
-    { id: 'math',   name: 'Matma rozszerzona', color: '#6ea8fe' },
-    { id: 'geo',    name: 'Geografia',         color: '#4fd1a5' },
-    { id: 'german', name: 'Niemiecki',         color: '#ff7a59' }
+    { id: 'mathb',   name: 'Matematyka podstawowa',  color: '#6ea8fe' },
+    { id: 'polish',  name: 'Polski podstawowy',      color: '#e879a8' },
+    { id: 'english', name: 'Angielski dwujęzyczny',  color: '#b794f6' },
+    { id: 'germanb', name: 'Niemiecki podstawowy',   color: '#ff7a59' },
+    { id: 'mathr',   name: 'Matematyka rozszerzona', color: '#7c8cff' },
+    { id: 'geo',     name: 'Geografia rozszerzona',  color: '#4fd1a5' }
   ];
+  const EXAM_ALIASES = { math: 'mathr', german: 'germanb' };   // stare identyfikatory z poprzedniej wersji
+  const MAX_EVENTS = 60;
+  const EXAMS_VISIBLE = 6;
   const WEEKDAYS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So'];   // indeks = Date.getDay()
   const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];                        // tydzień od poniedziałku
   const TITLES = [[1, 'Nowicjusz'], [3, 'Adept'], [5, 'Łowca nawyków'], [8, 'Strateg'], [12, 'Mistrz dyscypliny'], [18, 'Legenda']];
@@ -471,7 +511,7 @@
   /* ---------- Stan i zapis (LocalStorage) ---------- */
   const defaultState = () => ({
     version: VERSION, habits: [], logs: {}, notes: [], timers: {}, pomodoro: null, pomodoroCount: 0,
-    bankedXp: 0, spentXp: 0, rewards: [], redeemed: [], unlocked: {}, exams: {}, lastExportAt: null, theme: 'dark'
+    bankedXp: 0, spentXp: 0, rewards: [], redeemed: [], unlocked: {}, exams: {}, events: [], lastExportAt: null, theme: 'dark'
   });
 
   function parseItems(text, old = []) {
@@ -567,6 +607,13 @@
     }
     if (raw.exams && typeof raw.exams === 'object') {
       for (const ex of EXAMS) if (isDateKey(raw.exams[ex.id])) s.exams[ex.id] = raw.exams[ex.id];
+      for (const [oldId, newId] of Object.entries(EXAM_ALIASES)) {
+        if (!s.exams[newId] && isDateKey(raw.exams[oldId])) s.exams[newId] = raw.exams[oldId];
+      }
+    }
+    for (const ev of (Array.isArray(raw.events) ? raw.events : []).slice(0, MAX_EVENTS)) {
+      if (!ev || typeof ev.name !== 'string' || !ev.name.trim() || !isDateKey(ev.date)) continue;
+      s.events.push({ id: safeId(ev.id) ? ev.id : uid(), name: ev.name.trim().slice(0, 40), date: ev.date });
     }
     const le = Number(raw.lastExportAt);
     s.lastExportAt = Number.isFinite(le) && le > 0 ? le : null;
@@ -602,7 +649,7 @@
 
   let state = loadState();
   const ui = {
-    habitFilter: 'all', noteFilter: 'all', noteCat: 'school', noteAsList: false, search: '',
+    habitFilter: 'all', noteFilter: 'all', noteCat: 'school', noteAsList: false, search: '', showAllEvents: false,
     openNotes: new Set(), cal: {}, armed: null, focusFk: null, msgs: [],
     editingNote: null, editDraft: null,
     form: { editingId: null, type: 'bool', category: 'school', days: [0, 1, 2, 3, 4, 5, 6] },
@@ -741,7 +788,7 @@
     { id: 'pomo5',     icon: 'timer',          name: '5 sesji Pomodoro',   desc: 'Ukończ 5 pełnych sesji po 25 minut',           progress: () => [state.pomodoroCount, 5] },
     { id: 'pomo25',    icon: 'timer',          name: '25 sesji Pomodoro',  desc: 'Ukończ 25 pełnych sesji po 25 minut',          progress: () => [state.pomodoroCount, 25] },
     { id: 'reward',    icon: 'gift',           name: 'Zasłużona nagroda',  desc: 'Odbierz pierwszą nagrodę za XP',               progress: () => [state.redeemed.length || state.spentXp > 0 ? 1 : 0, 1] },
-    { id: 'matura',    icon: 'calendar-check', name: 'Matura na radarze',  desc: 'Ustaw daty wszystkich trzech egzaminów',       progress: () => [EXAMS.filter((e) => state.exams[e.id]).length, 3] }
+    { id: 'matura',    icon: 'calendar-check', name: 'Matura na radarze',  desc: 'Ustaw daty wszystkich egzaminów maturalnych', progress: () => [EXAMS.filter((e) => state.exams[e.id]).length, EXAMS.length] }
   ];
   /* Nowo zdobyte odznaki zapisują się na stałe, więc nie znikają po usunięciu nawyku. */
   function checkAchievements() {
@@ -902,23 +949,51 @@
       </div>`;
   }
 
+  /* Egzaminy i własne wydarzenia w jednej liście: najbliższe pierwsze, bez daty potem, minione na końcu. */
+  function countdownRows() {
+    const rows = [
+      ...EXAMS.map((e) => ({ kind: 'exam', id: e.id, name: e.name, color: e.color, date: state.exams[e.id] || '' })),
+      ...state.events.map((e) => ({ kind: 'event', id: e.id, name: e.name, color: 'var(--gold)', date: e.date }))
+    ];
+    rows.forEach((r, i) => { r.order = i; r.n = r.date ? daysUntil(r.date) : null; });
+    const group = (r) => (r.n === null ? 1 : r.n >= 0 ? 0 : 2);
+    return rows.sort((a, b) => {
+      const ga = group(a), gb = group(b);
+      if (ga !== gb) return ga - gb;
+      if (ga === 0 && a.n !== b.n) return a.n - b.n;
+      if (ga === 2 && a.n !== b.n) return b.n - a.n;
+      return a.order - b.order;
+    });
+  }
+
   function renderExams() {
-    $('#exams').innerHTML = EXAMS.map((ex) => {
-      const date = state.exams[ex.id] || '';
+    const rows = countdownRows();
+    const shown = ui.showAllEvents ? rows : rows.slice(0, EXAMS_VISIBLE);
+    $('#exams').innerHTML = shown.map((r) => {
       let big = '—', small = 'ustaw datę';
-      if (date) {
-        const n = daysUntil(date);
-        if (n > 0) { big = String(n); small = plDays(n); }
-        else if (n === 0) { big = 'Dziś'; small = 'egzamin!'; }
+      if (r.n !== null) {
+        if (r.n > 0) { big = String(r.n); small = plDays(r.n); }
+        else if (r.n === 0) { big = 'Dziś'; small = r.kind === 'exam' ? 'egzamin!' : 'to dziś!'; }
         else { big = 'Po'; small = 'terminie'; }
       }
+      const isEvent = r.kind === 'event';
+      const armed = ui.armed === 'e:' + r.id;
+      const del = isEvent
+        ? `<button class="icon-btn ${armed ? 'armed' : ''}" style="margin:-4px -6px 0 0" data-action="delete-event" data-id="${r.id}" aria-label="Usuń wydarzenie ${esc(r.name)}">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>`
+        : '';
       return `
-        <div class="exam" style="--c:${ex.color}">
-          <div class="flex items-center gap-2 text-sm font-medium"><span class="dot"></span>${esc(ex.name)}</div>
+        <div class="exam ${r.n !== null && r.n < 0 ? 'is-past' : ''}" style="--c:${r.color}">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-start gap-2 text-sm font-medium min-w-0"><span class="dot" style="margin-top:5px"></span><span class="break-words">${esc(r.name)}</span></div>
+            ${del}
+          </div>
           <div class="exam-days"><b>${esc(big)}</b><span>${esc(small)}</span></div>
-          <input type="date" class="exam-date" data-exam="${ex.id}" value="${esc(date)}" aria-label="Data egzaminu: ${esc(ex.name)}">
+          <input type="date" class="exam-date" ${isEvent ? 'data-event' : 'data-exam'}="${esc(r.id)}" value="${esc(r.date)}" aria-label="Data: ${esc(r.name)}">
         </div>`;
     }).join('');
+    $('#examsMore').innerHTML = rows.length > EXAMS_VISIBLE
+      ? `<button class="chip" data-action="toggle-events">${ui.showAllEvents ? 'Pokaż mniej' : `Pokaż wszystkie (${rows.length})`}</button>`
+      : '';
   }
 
   /* ---------- Render: nawyki ---------- */
@@ -1447,6 +1522,20 @@
     commit();
   }
 
+  /* ---------- Własne wydarzenia w odliczaniu ---------- */
+  function addEvent() {
+    const name = $('#eName').value.trim();
+    const date = $('#eDate').value;
+    const err = $('#eError');
+    if (!name) { err.textContent = 'Podaj nazwę wydarzenia.'; err.hidden = false; $('#eName').focus(); return; }
+    if (!isDateKey(date)) { err.textContent = 'Wybierz datę wydarzenia.'; err.hidden = false; return; }
+    if (state.events.length >= MAX_EVENTS) { err.textContent = `Możesz mieć maksymalnie ${MAX_EVENTS} własnych wydarzeń.`; err.hidden = false; return; }
+    state.events.push({ id: uid(), name: name.slice(0, 40), date });
+    closeModals();
+    say(`Dodano wydarzenie: ${name.slice(0, 40)}`);
+    commit();
+  }
+
   /* ---------- Nagrody ---------- */
   function addReward() {
     const name = $('#rewardName').value.trim();
@@ -1494,7 +1583,7 @@
   async function exportData() {
     const stamp = Date.now();
     const text = buildExport(stamp);
-    const name = `questlog-kopia-${todayKey()}.txt`;
+    const name = `maxhabittracker-kopia-${todayKey()}.txt`;
     if (downloadsApi) {
       try {
         await downloadsApi.save({ filename: name, data: text });
@@ -1531,7 +1620,7 @@
       openModal('importModal');
     } catch (e) {
       ui.pendingImport = null;
-      toast('To nie wygląda na kopię z Questlog. Wybierz plik zapisany przyciskiem „Eksportuj dane”.');
+      toast('To nie wygląda na kopię z MaxHabitTracker. Wybierz plik zapisany przyciskiem „Eksportuj dane”.');
     }
   }
 
@@ -1614,6 +1703,14 @@
         break;
       }
 
+      case 'new-event':
+        $('#eName').value = ''; $('#eDate').value = ''; $('#eError').hidden = true;
+        openModal('eventModal'); $('#eName').focus();
+        break;
+      case 'save-event': addEvent(); break;
+      case 'delete-event': arm('e:' + id, () => { state.events = state.events.filter((ev) => ev.id !== id); commit(); }); break;
+      case 'toggle-events': ui.showAllEvents = !ui.showAllEvents; render(); break;
+
       case 'open-rewards': openModal('rewardsModal'); renderRewards(); refreshIcons(); break;
       case 'open-ach': openModal('achModal'); renderAchievements(); refreshIcons(); break;
       case 'add-reward': addReward(); break;
@@ -1661,6 +1758,11 @@
     if (ds.exam) {
       if (isDateKey(t.value)) state.exams[ds.exam] = t.value; else delete state.exams[ds.exam];
       commit();
+    } else if (ds.event !== undefined) {
+      const ev = state.events.find((x) => x.id === ds.event);
+      if (ev && isDateKey(t.value)) ev.date = t.value;
+      else if (ev) toast('Wydarzenie musi mieć datę. Usuń je, jeśli już go nie potrzebujesz.');
+      commit();
     } else if (ds.dayval) {
       const h = habitById(ds.id);
       if (!h || !ds.day || ds.day > todayKey()) return;
@@ -1677,6 +1779,7 @@
       closeModals();
     }
     if (e.key === 'Enter' && e.target.id === 'fName') { e.preventDefault(); submitHabit(); }
+    if (e.key === 'Enter' && e.target.id === 'eName') { e.preventDefault(); addEvent(); }
     if (e.key === 'Enter' && (e.target.id === 'rewardName' || e.target.id === 'rewardCost')) { e.preventDefault(); addReward(); }
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.target.id === 'noteText') { e.preventDefault(); addNote(); }
   });
