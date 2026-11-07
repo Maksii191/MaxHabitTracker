@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 <script>
   if (window.tailwind) {
@@ -224,6 +224,7 @@
     * { transition: none !important; animation: none !important; }
   }
 </style>
+<link rel="stylesheet" href="extras.css">
 </head>
 <body class="font-sans">
 <div class="shell">
@@ -326,6 +327,7 @@
       <div>
         <span class="label">Dni tygodnia</span>
         <div class="flex flex-wrap gap-2" id="fDays"></div>
+        <div class="mt-3"><label class="text-xs text-muted" for="fWeekly">Cel tygodniowy (opcjonalnie): seria nie pęka, jeśli cel da się jeszcze zrobić</label><select id="fWeekly" class="field"><option value="0">Brak (według dni)</option><option value="1">1 raz w tygodniu</option><option value="2">2 razy w tygodniu</option><option value="3">3 razy w tygodniu</option><option value="4">4 razy w tygodniu</option><option value="5">5 razy w tygodniu</option><option value="6">6 razy w tygodniu</option></select></div>
         <p class="text-xs text-muted mt-2">W dni, których nie zaznaczysz, seria się nie przerywa.</p>
       </div>
       <div id="fCountFields" class="grid grid-cols-3 gap-3" hidden>
@@ -449,6 +451,7 @@
         <div class="flex flex-wrap gap-2">
           <button class="btn btn-primary" id="syncLogin" data-action="sync-login">Zaloguj</button>
           <button class="btn" id="syncSignup" data-action="sync-signup">Załóż konto</button>
+          <button class="btn btn-sm" data-action="sync-recover">Nie pamiętam hasła</button>
         </div>
       </div>
       <p class="text-xs text-muted mt-4">Dane nie są szyfrowane end-to-end. Nie wpisuj do notatek haseł ani innych wrażliwych informacji.</p>
@@ -505,6 +508,19 @@
     growth: { label: 'Rozwój',  color: '#b794f6' },
     health: { label: 'Zdrowie', color: '#4fd1a5' }
   };
+  const BASE_CATS = Object.keys(CATEGORIES);
+  function syncCats(list) {
+    for (const k of Object.keys(CATEGORIES)) if (!BASE_CATS.includes(k)) delete CATEGORIES[k];
+    const out = [];
+    for (const c of Array.isArray(list) ? list : []) {
+      if (!c || typeof c.id !== 'string' || !/^[a-z0-9]{3,12}$/i.test(c.id) || typeof c.label !== 'string' || !c.label.trim()) continue;
+      if (out.length >= 12) break;
+      const label = c.label.trim().slice(0, 20), color = /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : '#94a3b8';
+      out.push({ id: c.id, label, color });
+      CATEGORIES['c_' + c.id] = { label: label.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])), color };
+    }
+    return out;
+  }
   const NOTE_CATS = {
     school:   { label: 'Szkoła/Matura',        color: '#6ea8fe' },
     projects: { label: 'Projekty/Side Questy', color: '#f472b6' }
@@ -572,7 +588,7 @@
   /* ---------- Stan i zapis (LocalStorage) ---------- */
   const defaultState = () => ({
     version: VERSION, habits: [], logs: {}, notes: [], timers: {}, pomodoro: null, pomodoroCount: 0,
-    bankedXp: 0, spentXp: 0, rewards: [], redeemed: [], unlocked: {}, exams: {}, events: [], lastExportAt: null, theme: 'dark'
+    bankedXp: 0, spentXp: 0, rewards: [], redeemed: [], unlocked: {}, exams: {}, events: [], customCats: [], examsMigrated: false, extras: {}, lastExportAt: null, theme: 'dark'
   });
 
   function parseItems(text, old = []) {
@@ -586,6 +602,7 @@
 
   /* Wczytuje i czyści dane (z LocalStorage albo z pliku). Starsze wersje danych też przejdą. */
   function sanitizeState(raw) {
+    const _cc = syncCats(raw && raw.customCats);
     if (!raw || typeof raw !== 'object' || (!Array.isArray(raw.habits) && !Array.isArray(raw.notes))) {
       throw new Error('invalid-format');
     }
@@ -606,7 +623,9 @@
         unit: type === 'count' ? String(h.unit == null ? '' : h.unit).slice(0, 12) : '',
         step: type === 'count' ? clampNum(h.step, 0.01, 10000, 1) : 1,
         days: days.sort((a, b) => a - b),
-        createdAt: Number(h.createdAt) || Date.now()
+        createdAt: Number(h.createdAt) || Date.now(),
+        archived: !!h.archived,
+        weekly: Number.isInteger(Number(h.weekly)) && Number(h.weekly) >= 1 && Number(h.weekly) <= 6 ? Number(h.weekly) : 0
       });
     }
     if (raw.logs && typeof raw.logs === 'object') {
@@ -673,11 +692,14 @@
       }
     }
     for (const ev of (Array.isArray(raw.events) ? raw.events : []).slice(0, MAX_EVENTS)) {
-      if (!ev || typeof ev.name !== 'string' || !ev.name.trim() || !isDateKey(ev.date)) continue;
-      s.events.push({ id: safeId(ev.id) ? ev.id : uid(), name: ev.name.trim().slice(0, 40), date: ev.date });
+      if (!ev || typeof ev.name !== 'string' || !ev.name.trim() || (ev.date !== '' && !isDateKey(ev.date))) continue;
+      s.events.push({ id: safeId(ev.id) ? ev.id : uid(), name: ev.name.trim().slice(0, 40), date: ev.date, color: /^#[0-9a-f]{6}$/i.test(ev.color) ? ev.color : undefined });
     }
     const le = Number(raw.lastExportAt);
     s.lastExportAt = Number.isFinite(le) && le > 0 ? le : null;
+    try { const ex = JSON.parse(JSON.stringify(raw.extras || {})); s.extras = ex && typeof ex === 'object' && !Array.isArray(ex) && JSON.stringify(ex).length < 400000 ? ex : {}; } catch (e) { s.extras = {}; }
+    s.examsMigrated = !!raw.examsMigrated;
+    s.customCats = _cc;
     s.theme = raw.theme === 'light' ? 'light' : 'dark';
     return s;
   }
@@ -711,6 +733,8 @@
   function save() { persist(); markDirty(); }
 
   let state = loadState();
+  setTimeout(() => { try { handleRecoveryLink(); } catch (e) { /* brak linku */ } }, 0);
+  window.__mht = { cats: (list) => { state.customCats = syncCats(list); renderCatChips(); commit(); }, lvl: () => levelInfo(totalXp()).level, info: () => { const i = levelInfo(totalXp()); return { ...i, title: titleFor(i.level) }; }, get: () => state, save: () => save(), render: () => render(), todo: () => state.habits.filter((x) => !x.archived && isScheduled(x, todayKey()) && !isDone(x, todayKey()) && !(x.weekly && weekDone(x) >= x.weekly)).map((x) => x.name) };
 
   /* ---------- Synchronizacja: konfiguracja i dane logowania (osobno od danych aplikacji) ---------- */
   const SUPABASE_URL = 'https://kbprgdinfclznvksrqeq.supabase.co';
@@ -756,6 +780,14 @@
   const habitById = (id) => state.habits.find((h) => h.id === id);
   const goalOf = (h) => (h.type === 'time' ? h.target * 60 : h.type === 'count' ? h.target : 1);
   const isScheduled = (h, key) => h.days.includes(dayOfWeek(key));
+  const weekKeys = (key) => { const mon = shiftKey(key, -((dayOfWeek(key) + 6) % 7)); return Array.from({ length: 7 }, (_, i) => shiftKey(mon, i)); };
+  const weekDone = (h) => weekKeys(todayKey()).filter((k) => isDone(h, k)).length;
+  const isMust = (h, key) => {
+    if (!h.weekly) return isScheduled(h, key);
+    const ks = weekKeys(key), i = ks.indexOf(key);
+    return ks.slice(0, i).filter((k) => isDone(h, k)).length + (7 - i) <= h.weekly;
+  };
+  const moveHabit = (id, d) => { const a = state.habits, i = a.findIndex((x) => x.id === id), j = i + d; if (i < 0 || j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; commit(); };
 
   function valueOf(h, key) {
     let v = (state.logs[h.id] && state.logs[h.id][key] && state.logs[h.id][key].value) || 0;
@@ -801,22 +833,23 @@
   }
   /* Seria: dni wolne od nawyku jej nie przerywają, a zrobione dodatkowe dni się liczą. */
   function streakOf(h) {
+    let fz = 1;
     const t = todayKey(), start = habitStartKey(h);
     let key = isDone(h, t) || !isScheduled(h, t) ? t : shiftKey(t, -1);
     let n = 0;
     for (let i = 0; i < MAX_SCAN_DAYS && key >= start; i++) {
       if (isDone(h, key)) n++;
-      else if (isScheduled(h, key)) break;
+      else if (isMust(h, key)) { if (!fz) break; fz = 0; }
       key = shiftKey(key, -1);
     }
     return n;
   }
   function bestStreakOf(h) {
     const t = todayKey();
-    let key = habitStartKey(h), best = 0, run = 0;
+    let key = habitStartKey(h), best = 0, run = 0, fz = 1;
     for (let i = 0; i < MAX_SCAN_DAYS && key <= t; i++) {
       if (isDone(h, key)) { run++; best = Math.max(best, run); }
-      else if (isScheduled(h, key)) run = 0;
+      else if (isMust(h, key)) { if (fz) fz = 0; else { run = 0; fz = 1; } }
       key = shiftKey(key, 1);
     }
     return best;
@@ -824,7 +857,7 @@
 
   /* ---------- XP, poziomy, nagrody ---------- */
   const doneDaysOf = (h) => Object.keys(state.logs[h.id] || {}).filter((k) => isDone(h, k)).length;
-  const xpOfHabit = (h) => doneDaysOf(h) * TYPES[h.type].xp;
+  const xpOfHabit = (h) => Math.round(doneDaysOf(h) * TYPES[h.type].xp * (1 + Math.min(0.5, Math.floor(bestStreakOf(h) / 7) * 0.1)));
   const totalXp = () => state.bankedXp + state.habits.reduce((sum, h) => sum + xpOfHabit(h), 0);
   const availableXp = () => Math.max(0, totalXp() - state.spentXp);
   const xpForLevel = (l) => 60 + l * 20;
@@ -845,7 +878,7 @@
       study: () => get('study', () => {
         let sec = 0;
         for (const h of state.habits) {
-          if (h.type !== 'time' || h.category !== 'school') continue;
+          if (h.type !== 'time' || (h.category !== 'school' && !h.category.startsWith('c_'))) continue;
           for (const k of Object.keys(state.logs[h.id] || {})) sec += valueOf(h, k);
         }
         return Math.floor((sec / 3600) * 10) / 10;
@@ -860,11 +893,12 @@
     for (const h of state.habits) for (const k of Object.keys(state.logs[h.id] || {})) days.add(k);
     const starts = new Map(state.habits.map((h) => [h.id, habitStartKey(h)]));
     for (const key of days) {
-      const list = state.habits.filter((h) => isScheduled(h, key) && starts.get(h.id) <= key);
+      const list = state.habits.filter((h) => !h.archived && isScheduled(h, key) && starts.get(h.id) <= key);
       if (list.length >= 3 && list.every((h) => isDone(h, key))) return true;
     }
     return false;
   }
+  const arcItems = () => ((state.extras && state.extras.arc) || []).flatMap((c) => c.items || []);
   const ACHIEVEMENTS = [
     { id: 'first',     icon: 'footprints',     name: 'Pierwszy krok',      desc: 'Ukończ dowolny nawyk',                         progress: (c) => [c.doneDays(), 1] },
     { id: 'streak7',   icon: 'flame',          name: '7 dni serii',        desc: 'Seria 7 dni w jednym nawyku',                  progress: (c) => [c.best(), 7] },
@@ -880,7 +914,14 @@
     { id: 'pomo5',     icon: 'timer',          name: '5 sesji Pomodoro',   desc: 'Ukończ 5 pełnych sesji po 25 minut',           progress: () => [state.pomodoroCount, 5] },
     { id: 'pomo25',    icon: 'timer',          name: '25 sesji Pomodoro',  desc: 'Ukończ 25 pełnych sesji po 25 minut',          progress: () => [state.pomodoroCount, 25] },
     { id: 'reward',    icon: 'gift',           name: 'Zasłużona nagroda',  desc: 'Odbierz pierwszą nagrodę za XP',               progress: () => [state.redeemed.length || state.spentXp > 0 ? 1 : 0, 1] },
-    { id: 'matura',    icon: 'calendar-check', name: 'Matura na radarze',  desc: 'Ustaw daty wszystkich egzaminów maturalnych', progress: () => [EXAMS.filter((e) => state.exams[e.id]).length, EXAMS.length] }
+    { id: 'sheets10',  icon: 'file-check',   name: 'Arkuszowiec',   desc: 'Zrób 10 arkuszy w zakładce Arkusze', progress: () => [arcItems().filter((i) => i.done).length, 10] },
+    { id: 'sheets90',  icon: 'target',       name: 'Celny strzał',  desc: 'Średnia co najmniej 90% z 5 arkuszy z wynikiem', progress: () => { const s = arcItems().filter((i) => i.pct != null); const a = s.length ? s.reduce((x, i) => x + i.pct, 0) / s.length : 0; return [s.length >= 5 && a >= 90 ? 1 : 0, 1]; } },
+    { id: 'streak200', icon: 'flame',        name: '200 dni serii', desc: 'Seria 200 dni w jednym nawyku', progress: (c) => [c.best(), 200] },
+    { id: 'lvl20',     icon: 'trending-up',  name: 'Poziom 20',     desc: 'Osiągnij 20 poziom',            progress: (c) => [c.level(), 20] },
+    { id: 'xp1000',    icon: 'zap',          name: '1000 XP',       desc: 'Zdobądź łącznie 1000 XP',       progress: () => [totalXp(), 1000] },
+    { id: 'cards50',   icon: 'layers',       name: 'Fiszkarz',      desc: 'Dodaj 50 fiszek',               progress: () => [((state.extras && state.extras.sets) || []).reduce((n, s) => n + s.cards.length, 0), 50] },
+    { id: 'neg30',     icon: 'shield-check', name: 'Silna wola',    desc: '30 dni bez wpadki w nawyku negatywnym', progress: () => [((state.extras && state.extras.neg) || []).reduce((m, n) => Math.max(m, n.best || 0, Math.floor((Date.now() - n.since) / 864e5)), 0), 30] },
+    { id: 'matura',    icon: 'calendar-check', name: 'Matura na radarze',  desc: 'Ustaw daty wszystkich egzaminów maturalnych', progress: () => [Math.min(EXAMS.length, state.events.filter((e) => e.date).length), EXAMS.length] }
   ];
   /* Nowo zdobyte odznaki zapisują się na stałe, więc nie znikają po usunięciu nawyku. */
   function checkAchievements() {
@@ -1008,8 +1049,8 @@
 
   function renderHero() {
     const xp = totalXp(), L = levelInfo(xp), key = todayKey();
-    const doneList = state.habits.filter((h) => isDone(h, key));
-    const schedToday = state.habits.filter((h) => isScheduled(h, key));
+    const doneList = state.habits.filter((h) => !h.archived && isDone(h, key));
+    const schedToday = state.habits.filter((h) => !h.archived && isScheduled(h, key));
     const doneSched = schedToday.filter((h) => isDone(h, key)).length;
     const todayXp = doneList.reduce((s, h) => s + TYPES[h.type].xp, 0);
     const bestNow = state.habits.reduce((m, h) => Math.max(m, streakOf(h)), 0);
@@ -1045,8 +1086,7 @@
   /* Egzaminy i własne wydarzenia w jednej liście: najbliższe pierwsze, bez daty potem, minione na końcu. */
   function countdownRows() {
     const rows = [
-      ...EXAMS.map((e) => ({ kind: 'exam', id: e.id, name: e.name, color: e.color, date: state.exams[e.id] || '' })),
-      ...state.events.map((e) => ({ kind: 'event', id: e.id, name: e.name, color: 'var(--gold)', date: e.date }))
+      ...state.events.map((e) => ({ kind: 'event', id: e.id, name: e.name, color: e.color || 'var(--gold)', date: e.date }))
     ];
     rows.forEach((r, i) => { r.order = i; r.n = r.date ? daysUntil(r.date) : null; });
     const group = (r) => (r.n === null ? 1 : r.n >= 0 ? 0 : 2);
@@ -1070,6 +1110,7 @@
         else { big = 'Po'; small = 'terminie'; }
       }
       const isEvent = r.kind === 'event';
+      const ren = `<button class="icon-btn" style="margin:-4px 0 0 0" data-action="rename-event" data-id="${r.id}" aria-label="Zmień nazwę ${esc(r.name)}"><i data-lucide="pencil"></i></button>`;
       const armed = ui.armed === 'e:' + r.id;
       const del = isEvent
         ? `<button class="icon-btn ${armed ? 'armed' : ''}" style="margin:-4px -6px 0 0" data-action="delete-event" data-id="${r.id}" aria-label="Usuń wydarzenie ${esc(r.name)}">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>`
@@ -1078,7 +1119,7 @@
         <div class="exam ${r.n !== null && r.n < 0 ? 'is-past' : ''}" style="--c:${r.color}">
           <div class="flex items-start justify-between gap-2">
             <div class="flex items-start gap-2 text-sm font-medium min-w-0"><span class="dot" style="margin-top:5px"></span><span class="break-words">${esc(r.name)}</span></div>
-            ${del}
+            <span class="flex">${ren}${del}</span>
           </div>
           <div class="exam-days"><b>${esc(big)}</b><span>${esc(small)}</span></div>
           <input type="date" class="exam-date" ${isEvent ? 'data-event' : 'data-exam'}="${esc(r.id)}" value="${esc(r.date)}" aria-label="Data: ${esc(r.name)}">
@@ -1091,6 +1132,7 @@
 
   /* ---------- Render: nawyki ---------- */
   function renderHabitFilters() {
+    renderCatChips();
     const host = $('#habitFilters');
     if (!state.habits.length) { host.innerHTML = ''; return; }
     const chips = [`<button class="chip" data-action="filter-habit" data-value="all" aria-pressed="${ui.habitFilter === 'all'}">Wszystkie <span class="cnt">${state.habits.length}</span></button>`];
@@ -1212,7 +1254,8 @@
     const offToday = !isScheduled(h, key);
     const calOpen = !!ui.cal[h.id];
     const dl = daysLabel(h);
-    const goalText = h.type === 'bool' ? 'Tak/Nie' : h.type === 'count' ? `cel: ${fmtNum(h.target)}${unit}` : `cel: ${fmtNum(h.target)} min`;
+    let goalText = h.type === 'bool' ? 'Tak/Nie' : h.type === 'count' ? `cel: ${fmtNum(h.target)}${unit}` : `cel: ${fmtNum(h.target)} min`;
+    if (h.weekly) goalText += ` · ${weekDone(h)}/${h.weekly} w tyg.`;
 
     let controls = '';
     if (h.type === 'bool') {
@@ -1273,6 +1316,9 @@
           <div class="flex items-center gap-1 shrink-0">
             <span class="streak ${streak > 0 ? 'hot' : ''}" title="Aktualna seria (dni wolne jej nie przerywają)"><i data-lucide="flame" class="sm"></i>${streak} ${plDays(streak)}</span>
             <button class="icon-btn" data-action="edit-habit" data-id="${h.id}" aria-label="Edytuj nawyk ${esc(h.name)}"><i data-lucide="pencil" class="sm"></i></button>
+            <button class="icon-btn" data-action="habit-up" data-id="${h.id}" aria-label="Przesuń nawyk ${esc(h.name)} wyżej"><i data-lucide="chevron-up"></i></button>
+            <button class="icon-btn" data-action="habit-down" data-id="${h.id}" aria-label="Przesuń nawyk ${esc(h.name)} niżej"><i data-lucide="chevron-down"></i></button>
+            <button class="icon-btn" data-action="archive-habit" data-id="${h.id}" aria-label="${h.archived ? 'Przywróć' : 'Archiwizuj'} nawyk ${esc(h.name)}"><i data-lucide="${h.archived ? 'archive-restore' : 'archive'}"></i></button>
             <button class="icon-btn ${armed ? 'armed' : ''}" data-action="delete-habit" data-id="${h.id}" aria-label="Usuń nawyk ${esc(h.name)}">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>
           </div>
         </div>
@@ -1304,7 +1350,7 @@
         </div>`;
       return;
     }
-    const list = state.habits.filter((h) => ui.habitFilter === 'all' || h.category === ui.habitFilter);
+    const list = state.habits.filter((h) => (ui.showArch ? h.archived : !h.archived) && (ui.habitFilter === 'all' || h.category === ui.habitFilter));
     host.innerHTML = list.length ? list.map(habitCard).join('') : '<p class="text-sm text-muted py-6 text-center">Brak nawyków w tej kategorii.</p>';
   }
 
@@ -1501,6 +1547,7 @@
   function openHabitForm(id) {
     const h = id ? habitById(id) : null;
     ui.form = { editingId: h ? h.id : null, type: h ? h.type : 'bool', category: h ? h.category : 'school', days: h ? [...h.days] : [0, 1, 2, 3, 4, 5, 6] };
+    { const fw = $('#fWeekly'); if (fw) fw.value = String((h && h.weekly) || 0); }
     $('#habitModalTitle').textContent = h ? 'Edytuj nawyk' : 'Nowy nawyk';
     $('#fSave').textContent = h ? 'Zapisz zmiany' : 'Dodaj nawyk';
     $('#fName').value = h ? h.name : '';
@@ -1533,11 +1580,14 @@
     step = clampNum(step, 0.01, 10000, 1);
     const days = [...ui.form.days].sort((a, b) => a - b);
     const editing = ui.form.editingId ? habitById(ui.form.editingId) : null;
+    const weekly = Math.max(0, Math.min(6, Number(($('#fWeekly') || {}).value) || 0));
     if (editing) {
-      Object.assign(editing, { name, category: ui.form.category, target, unit, step, days });
+      const xp0 = xpOfHabit(editing);
+      Object.assign(editing, { name, category: ui.form.category, target, unit, step, days, weekly });
+      state.bankedXp = Math.max(0, state.bankedXp + xp0 - xpOfHabit(editing));
       say('Zapisano zmiany');
     } else {
-      state.habits.push({ id: uid(), name, type, category: ui.form.category, target, unit, step, days, createdAt: Date.now() });
+      state.habits.push({ id: uid(), name, type, category: ui.form.category, target, unit, step, days, weekly, createdAt: Date.now() });
       say('Dodano nowy nawyk');
     }
     closeModals();
@@ -1737,7 +1787,7 @@
     clearTimeout(sync.timer);
     sync.timer = setTimeout(syncNow, 2500);
   }
-  const localIsEmpty = () => !state.habits.length && !state.notes.length && !state.rewards.length && !state.events.length &&
+  const localIsEmpty = () => !state.habits.length && !state.notes.length && !state.rewards.length && state.events.every((e) => e.id.startsWith('ex-') && !e.date) &&
     !Object.keys(state.exams).length && !Object.keys(state.logs).length && state.bankedXp === 0;
   const readJson = async (res) => { try { return await res.json(); } catch (e) { return null; } };
   function relTime(ms) {
@@ -1763,6 +1813,19 @@
     } catch (e) { return null; }
   }
 
+  async function recoverPassword() {
+    const email = $('#syncEmail') ? $('#syncEmail').value.trim() : '';
+    if (!email) { toast('Wpisz e-mail, na który założyłeś konto.'); return; }
+    try { const res = await sbFetch('/auth/v1/recover', { method: 'POST', body: { email } }); toast(res.ok ? 'Wysłano link do zmiany hasła (sprawdź skrzynkę).' : 'Nie udało się wysłać linku.'); } catch (e) { toast('Brak połączenia z serwerem.'); }
+  }
+  async function handleRecoveryLink() {
+    const p = new URLSearchParams(location.hash.slice(1)), token = p.get('access_token');
+    if (p.get('type') !== 'recovery' || !token) return;
+    history.replaceState(null, '', location.pathname + location.search);
+    const pw = prompt('Nowe hasło do synchronizacji (min. 6 znaków):');
+    if (!pw || pw.length < 6) { toast('Hasło nie zostało zmienione.'); return; }
+    try { const res = await sbFetch('/auth/v1/user', { method: 'PUT', body: { password: pw }, token }); toast(res.ok ? 'Hasło zmienione. Zaloguj się nowym hasłem.' : 'Nie udało się zmienić hasła.'); } catch (e) { toast('Brak połączenia z serwerem.'); }
+  }
   async function sbFetch(path, { method = 'GET', body, headers = {}, token = null } = {}) {
     const h = { apikey: SUPABASE_KEY, ...headers };
     if (body !== undefined) h['Content-Type'] = 'application/json';
@@ -2087,6 +2150,10 @@
         break;
       }
       case 'sample-habits': addSampleHabits(); break;
+      case 'habit-up': moveHabit(id, -1); break;
+      case 'habit-down': moveHabit(id, 1); break;
+      case 'archive-habit': { const ah = state.habits.find((x) => x.id === id); if (ah) { ah.archived = !ah.archived; save(); render(); } break; }
+      case 'toggle-arch': ui.showArch = !ui.showArch; render(); break;
       case 'delete-habit': arm('h:' + id, () => deleteHabit(id)); break;
       case 'filter-habit': ui.habitFilter = value; render(); break;
 
@@ -2147,6 +2214,8 @@
         openModal('eventModal'); $('#eName').focus();
         break;
       case 'save-event': addEvent(); break;
+      case 'sync-recover': recoverPassword(); break;
+      case 'rename-event': { const ev = state.events.find((x) => x.id === id); const nn = ev && (prompt('Nowa nazwa:', ev.name) || '').trim(); if (nn) { ev.name = nn.slice(0, 40); commit(); } break; }
       case 'delete-event': arm('e:' + id, () => { state.events = state.events.filter((ev) => ev.id !== id); commit(); }); break;
       case 'toggle-events': ui.showAllEvents = !ui.showAllEvents; render(); break;
 
@@ -2265,8 +2334,12 @@
   }
 
   /* ---------- Start ---------- */
-  $('#fCats').innerHTML = Object.entries(CATEGORIES).map(([k, c]) =>
-    `<button type="button" class="chip" style="--c:${c.color}" data-action="pick-cat" data-cat="${k}"><span class="dot"></span>${c.label}</button>`).join('');
+  function renderCatChips() {
+    $('#fCats').innerHTML = Object.entries(CATEGORIES).map(([k, c]) =>
+      `<button type="button" class="chip" style="--c:${c.color}" data-action="pick-cat" data-cat="${k}"><span class="dot"></span>${c.label}</button>`).join('');
+    if (ui.form) syncForm();
+  }
+  renderCatChips();
   $('#fDays').innerHTML = DAY_ORDER.map((d) =>
     `<button type="button" class="chip" data-action="pick-day" data-day="${d}">${WEEKDAYS[d]}</button>`).join('');
   $('#noteCats').innerHTML = Object.entries(NOTE_CATS).map(([k, c]) =>
@@ -2283,5 +2356,6 @@
   setInterval(() => { if (meta.session && !document.hidden) syncNow(); }, 60000);
 })();
 </script>
+<script src="extras.js" defer></script>
 </body>
 </html>

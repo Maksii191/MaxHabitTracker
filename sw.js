@@ -1,7 +1,7 @@
 /* Service worker MaxHabitTracker: dzięki niemu aplikacja działa offline.
    Przy zmianie plików strony podbij numer wersji poniżej. */
-const CACHE = 'maxhabittracker-v2';
-const LOCAL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
+const CACHE = 'maxhabittracker-v17';
+const LOCAL = ['./', './index.html', './manifest.json', './extras.js', './extras.css', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(LOCAL)).then(() => self.skipWaiting()));
