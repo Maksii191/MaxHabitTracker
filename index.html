@@ -1115,7 +1115,7 @@
         else { big = 'Po'; small = 'terminie'; }
       }
       const isEvent = r.kind === 'event';
-      const ren = `<button class="icon-btn" style="margin:-4px 0 0 0" data-action="rename-event" data-id="${r.id}" aria-label="Zmień nazwę ${esc(r.name)}"><i data-lucide="pencil"></i></button>`;
+      const ren = `<button class="icon-btn" style="margin:2px -6px 0 0" data-action="rename-event" data-id="${r.id}" aria-label="Zmień nazwę ${esc(r.name)}"><i data-lucide="pencil"></i></button>`;
       const armed = ui.armed === 'e:' + r.id;
       const del = isEvent
         ? `<button class="icon-btn ${armed ? 'armed' : ''}" style="margin:-4px -6px 0 0" data-action="delete-event" data-id="${r.id}" aria-label="Usuń wydarzenie ${esc(r.name)}">${armed ? 'Usunąć?' : '<i data-lucide="trash-2" class="sm"></i>'}</button>`
@@ -1124,7 +1124,7 @@
         <div class="exam ${r.n !== null && r.n < 0 ? 'is-past' : ''}" style="--c:${r.color}">
           <div class="flex items-start justify-between gap-2">
             <div class="flex items-start gap-2 text-sm font-medium min-w-0"><span class="dot" style="margin-top:5px"></span><span class="break-words">${esc(r.name)}</span></div>
-            <span class="flex">${ren}${del}</span>
+            <span style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0">${del}${ren}</span>
           </div>
           <div class="exam-days"><b>${esc(big)}</b><span>${esc(small)}</span></div>
           <input type="date" class="exam-date" ${isEvent ? 'data-event' : 'data-exam'}="${esc(r.id)}" value="${esc(r.date)}" aria-label="Data: ${esc(r.name)}">
