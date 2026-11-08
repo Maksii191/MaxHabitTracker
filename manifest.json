@@ -1,6 +1,6 @@
 {
-  "name": "MaxHabitTracker",
-  "short_name": "MaxHabitTracker",
+  "name": "QuestLog",
+  "short_name": "QuestLog",
   "description": "Habit tracker z elementami RPG i Second Brain",
   "lang": "pl",
   "start_url": "./index.html",

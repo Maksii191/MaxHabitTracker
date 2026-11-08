@@ -13,3 +13,49 @@ main.cols.one{grid-template-columns:1fr!important}
 :root[data-skin=ocean]{--gold:#38bdf8;--gold-text:#38bdf8}:root[data-theme=light][data-skin=ocean]{--gold:#0ea5e9;--gold-text:#075985}
 :root[data-skin=sunset]{--gold:#fb7185;--gold-text:#fb7185}:root[data-theme=light][data-skin=sunset]{--gold:#e11d48;--gold-text:#9f1239}
 :root[data-skin=forest]{--gold:#4ade80;--gold-text:#4ade80}:root[data-theme=light][data-skin=forest]{--gold:#16a34a;--gold-text:#166534}
+
+/* ===== Przegląd wyglądu ===== */
+:root{--r:16px}
+body{background:radial-gradient(1100px 520px at 8% -8%,color-mix(in srgb,var(--gold) 10%,transparent),transparent 70%),radial-gradient(900px 480px at 100% 0,color-mix(in srgb,#7c8cff 9%,transparent),transparent 70%),var(--bg)!important;background-attachment:fixed}
+.card{border-radius:var(--r);box-shadow:0 1px 0 color-mix(in srgb,#fff 5%,transparent) inset,0 10px 28px -18px #000a;transition:border-color .2s,transform .15s}
+.card:hover{border-color:color-mix(in srgb,var(--gold) 32%,var(--line))}
+.btn{transition:background .15s,border-color .15s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,.field:focus-visible,.icon-btn:focus-visible,.tt-cat:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.field:focus{border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 22%,transparent);outline:none}
+.sheet{border-radius:22px;box-shadow:0 28px 70px -24px #000c;animation:pop .18s ease-out}
+@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}}
+.overlay{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.sheet .label{display:block;margin-bottom:6px;font-size:13px;color:var(--muted)}
+.dr{background:linear-gradient(180deg,var(--panel),var(--bg));box-shadow:20px 0 50px -30px #000c}
+.dr-i{border-radius:12px;height:46px;font-size:15px}
+h2.font-display{letter-spacing:-.015em}
+.bar{height:10px}
+.bar i{background:linear-gradient(90deg,var(--gold),color-mix(in srgb,var(--gold) 55%,#fff));border-radius:99px}
+.quote{border-left:4px solid var(--gold)}
+.stat{border-radius:var(--r);padding:12px;background:var(--panel);border:1px solid var(--line);text-align:center}
+.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--muted)}
+/* Typy zadań */
+.tt{display:grid;grid-template-columns:210px 1fr;gap:16px;align-items:start}
+.tt-side{display:flex;flex-direction:column;gap:6px;position:sticky;top:8px}
+.tt-cat{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);text-align:left;cursor:pointer}
+.tt-cat b{font-size:12px;color:var(--muted)}
+.tt-cat[aria-current=true]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,var(--panel))}
+.tt-item{margin-bottom:8px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden}
+.tt-item summary{cursor:pointer;padding:12px 14px;display:flex;flex-direction:column;gap:4px;list-style:none}
+.tt-item summary::-webkit-details-marker{display:none}
+.tt-n{font-weight:700}.tt-q{color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.tt-item[open]{border-color:var(--gold)}
+.tt-a{padding:0 14px 14px;white-space:pre-wrap;overflow-wrap:anywhere;border-top:1px dashed var(--line);padding-top:12px}
+@media (max-width:720px){.tt{grid-template-columns:1fr}.tt-side{position:static;flex-direction:row;flex-wrap:wrap}.tt-cat{flex:1 1 140px}}
+
+/* ===== Okna formularzy ===== */
+.dlg .sheet{padding:0;display:flex;flex-direction:column;max-height:88vh;overflow:hidden}
+.dlg-head{padding:20px 22px 10px}
+.dlg-body{padding:6px 22px 4px;overflow-y:auto}
+.dlg-row{margin-bottom:14px}
+.dlg-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--panel2) 55%,var(--panel))}
+.dlg-foot .btn{min-width:112px;justify-content:center;height:42px;font-weight:600}
+select.field{appearance:auto;padding-right:8px}
+input[type=color].field{cursor:pointer}
+@media (max-width:560px){.dlg{align-items:flex-end;padding:0}.dlg .sheet{max-width:none!important;border-radius:22px 22px 0 0}.dlg-foot{padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}.dlg-foot .btn{flex:1}}

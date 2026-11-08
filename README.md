@@ -1,4 +1,4 @@
-# MaxHabitTracker
+# QuestLog
 
 Aplikacja do nawyków (PWA): nawyki z serią i XP, nawyki negatywne („Dni bez…"), Second Brain, fiszki
 (Fiszki, Ucz się, Test, Dopasuj, Powtórki), statystyki (4 tryby), wyzwania tygodnia, odliczanie do matury,
@@ -17,8 +17,8 @@ i eksport terminów do kalendarza (.ics).
 
 ## Pliki
 - `index.html`: główna aplikacja, `extras.js` / `extras.css`: menu boczne, fiszki, statystyki, zakładka Dziś.
-- `sw.js`: cache offline. Przy każdej zmianie plików podbij wersję `maxhabittracker-vN` w `sw.js`.
-- `tests/`: testy w przeglądarce (`smoke.py`, `test_matura.py`, `test_arkusze_tagi_ics.py`, `test_kategorie.py`). Wymagają: `pip install playwright && playwright install chromium`.
+- `sw.js`: cache offline. Przy każdej zmianie plików podbij wersję `questlog-vN` w `sw.js`.
+- `tests/`: testy w przeglądarce (`helpers.py`, `smoke.py`, `test_formularze.py`, `test_matura.py`, `test_arkusze_tagi_ics.py`, `test_kategorie.py`). Wymagają: `pip install playwright && playwright install chromium`.
 
 ## Dane
 Wszystko zapisuje się lokalnie w przeglądarce, dlatego warto robić eksport kopii (przycisk w aplikacji).
